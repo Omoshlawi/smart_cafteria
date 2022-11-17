@@ -1,16 +1,12 @@
 class Manager:
-    def __init__(self):
-        pass
+    def get(self, **kwargs):
+        raise NotImplementedError()
 
-
-    def get(self, *args, **kwargs):
-        pass
-
-    def filter(self, *args, **kwargs):
-        pass
+    def filter(self, **kwargs):
+        raise NotImplementedError()
 
     def all(self):
-        return self.__module__
+        raise NotImplementedError()
 
     def create(self, **kwargs):
-        pass
+        raise NotImplementedError()
