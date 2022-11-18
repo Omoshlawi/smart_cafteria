@@ -20,7 +20,6 @@ class SqliteDb:
 
     @classmethod
     def getDatabase(cls, db=SQLITE_DATABASE):
-        conn: Connection = None
         try:
             conn = sqlite3.connect(db)
             return cls(conn)
@@ -58,7 +57,6 @@ class SqliteDb:
         """
         INSERT INTO User (username, password, first_name, last_name, email) VALUES (
         "ous", "ous", "ous", "ous", "ous");
-        :param conn:
         :param model:
         :return:
         """
@@ -90,7 +88,7 @@ class SqliteDb:
 
     def getSchema(self, model) -> typing.List[typing.Tuple]:
         """
-        Sample scheema returns
+        Sample schema returns
             CID, NAME, TYPE, NOT NULL, DEFAULT VALUE, PK
         [
             (0, '_id', 'INTEGER', 0, None, 1),
@@ -100,11 +98,8 @@ class SqliteDb:
         ]
 
         :param model:
-        :param conn:
-        :param table:
         :return:
         """
-        table_schema = []
         sql = f"""
         PRAGMA table_info({model._meta.table_name});
         """
@@ -112,14 +107,15 @@ class SqliteDb:
             c = self._connection.cursor()
             table_schema = c.execute(sql).fetchall()
             c.close()
+            return table_schema
         except Error as e:
             raise e
-        return table_schema
 
     def tableExists(self, model) -> bool:
         try:
-            self.getSchema(model)
-            return True
+            if self.getSchema(model):
+                return True
+            return False
         except Error as e:
             return False
 
@@ -128,11 +124,12 @@ class SqliteDb:
             schema = self.getSchema(model)
             for field in schema:
                 _, name, type_, null, default, pk = field
-                changed = f"{type_} {'NOT NULL' if null else 'NULL'} {f'DEFAULT {default}' if default else ''}".strip() != getattr(
-                    self, name).getSqlType().strip() and name != 'id_'
+                changed = f"{type_} {'NOT NULL' if null else 'NULL'} " \
+                          f"{f'DEFAULT {default}' if default else ''}" \
+                          f"".strip() != getattr(self, name).getSqlType().strip() and name != 'id_'
                 if changed:
                     # TODO SHOULD RETURN THE FIELDS THAT CHANGES ARE DETECTED IN
                     return True
         else:
-            self.create_table(model)
+            self.createTable(model)
         return False

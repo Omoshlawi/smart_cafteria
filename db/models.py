@@ -96,6 +96,7 @@ class Model(Manager):
 
     def __init__(self, **kwargs):
         super().__init__()
+        self._validate_kwargs(kwargs)
         self._meta = Model.Meta(self)
         for key, value in self._get_class_attrs():
             try:
@@ -103,17 +104,15 @@ class Model(Manager):
                 # print(key, value.__dict__)
             except KeyError:
                 pass
-        """for attr in kwargs:
-            try:
-                cls = type(getattr(self, attr))
-                val = cls(default=kwargs[attr])
-                print(val)
-                setattr(self, attr, val)
-            except ValueError as e:
-                raise e"""
-        if not self.is_db_up_to_date():
-            # TODO
-            pass
+            except AttributeError as e:
+                raise e
+
+    def _validate_kwargs(self, kwags):
+        try:
+            for key in kwags:
+                getattr(self, key)
+        except AttributeError as e:
+            raise e
 
     def _get_inst_attrs(self):
         return [attr for attr in self.__dict__ if not attr.startswith("_")]
@@ -128,13 +127,13 @@ class Model(Manager):
     def get_valid_fields(self) -> typing.Tuple:
         return tuple([f for f in self.get_filed_name() if getattr(self, f)._valid])
 
-    def create(self, **kwargs) -> 'Manager':
-        conn = getDatabase()
-        data = None
-        if conn:
-            data = insert(conn, self)
-        conn.close()
-        return data
+    @classmethod
+    def create(cls, **kwargs):
+        db = SqliteDb.getDatabase()
+        model = cls(**kwargs)
+        db.insert(model)
+        return model
+        # return db.schemaChanged(self)
 
     class Meta:
         table_name: str = ""
