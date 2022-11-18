@@ -100,7 +100,10 @@ class Model(Manager):
         self._meta = Model.Meta(self)
         for key, value in self._get_class_attrs():
             try:
-                value.setValue(kwargs[key])
+                if isinstance(value, BooleanField):
+                    value.setValue(value.value == 1)
+                else:
+                    value.setValue(kwargs[key])
                 # print(key, value.__dict__)
             except KeyError:
                 pass
@@ -132,6 +135,8 @@ class Model(Manager):
         db = SqliteDb.getDatabase()
         model = cls(**kwargs)
         db.insert(model)
+        db.close()
+        # TODO, UPDATE ALSO THE ID
         return model
         # return db.schemaChanged(self)
 
@@ -144,13 +149,27 @@ class Model(Manager):
                 self.table_name = model.__class__.__name__
 
     def save(self, commit=True) -> 'Model':
+        model=None
         if commit:
-            pass
+            if self.id_._valid:
+                # perfoms update
+                db = SqliteDb.getDatabase()
+                db.update(self)
+                model = self
+                db.close()
+            else:
+                kwargs = {key: getattr(self, key).value for key in self.get_valid_fields()}
+                # print(kwargs)
+                return self.create(**kwargs)
         else:
             pass
 
-    def get(self, **kwargs):
-        pass
+    @classmethod
+    def get(cls, **kwargs):
+        db = SqliteDb.getDatabase()
+        data = db.getRecord(cls(**kwargs))
+        db.close()
+        return cls(**data)
 
     def delete(self):
         pass

@@ -26,6 +26,21 @@ class SqliteDb:
         except Error as e:
             raise e
 
+    def getRecord(self, model):
+        all_fields = model.get_filed_name()
+        fields = model.get_valid_fields()
+        values = tuple(getattr(model, f).value for f in fields)
+        sql = f"""
+        SELECT {', '.join(all_fields)} FROM {model._meta.table_name} WHERE {'=? AND '.join(fields)}=?;
+        """
+        # print(sql)
+        try:
+            c = self._connection.cursor()
+            c.execute(sql, values)
+            return dict(zip(all_fields, c.fetchone()))
+        except Error as e:
+            raise e
+
     def alterTable(self, model):
         # TODO Implement my sl
         altered = False
@@ -37,7 +52,7 @@ class SqliteDb:
             c.execute(sql)
             altered = True
         except Error as e:
-            print(e)
+            raise e
         return altered
 
     def createTable(self, model):
@@ -66,6 +81,22 @@ class SqliteDb:
         sql = f"""INSERT INTO {model._meta.table_name} (
             {", ".join(fields)}
         ) VALUES ( {'?, ' * (len(fields) - 1)}? );
+        """
+        try:
+            c = self._connection.cursor()
+            c.execute(sql, values)
+            self._connection.commit()
+            c.close()
+        except Error as e:
+            raise e
+
+    def update(self, model):
+        fields = list(model.get_valid_fields())
+        fields.remove('id_')
+        values = [getattr(model, f).value for f in fields]
+        values.append(model.id_.value)
+        sql = f"""
+        UPDATE {model._meta.table_name} SET {'=?, '.join(fields)}=? WHERE id_=?;
         """
         try:
             c = self._connection.cursor()

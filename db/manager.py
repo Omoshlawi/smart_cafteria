@@ -1,5 +1,6 @@
 class Manager:
-    def get(self, **kwargs):
+    @classmethod
+    def get(cls, **kwargs):
         raise NotImplementedError()
 
     def filter(self, **kwargs):
