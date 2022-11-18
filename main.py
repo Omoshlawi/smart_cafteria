@@ -4,9 +4,12 @@ from students.models import Student
 from students.view import MainWindow
 from utils.utilities import get_sql_fields
 
-user = User(username="Omosh's", last_name='12', password="jeff", first_name="lawi", email="lawi@gmail.com")
-user.username.setValue("Mother")
+user = User.get(username='Omosh')
+# user.username.setValue("Mother")
+user.username.setValue("Kaka")
 user.save()
+print(user)
+# user.save()
 # ui = MainWindow()
 # f = models.BooleanField(default=True)
 # f.setValue("hellow@gmail.com")

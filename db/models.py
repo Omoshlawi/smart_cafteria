@@ -2,6 +2,7 @@ import hashlib
 import re as regex
 import typing
 
+from core.exceptions import ObjectDoesNotExistError, MultipleObjectsError, InvalidArgumentsError
 from .manager import Manager
 from .sqlite import SqliteDb
 
@@ -149,7 +150,7 @@ class Model(Manager):
                 self.table_name = model.__class__.__name__
 
     def save(self, commit=True) -> 'Model':
-        model=None
+        model = None
         if commit:
             if self.id_._valid:
                 # perfoms update
@@ -166,10 +167,25 @@ class Model(Manager):
 
     @classmethod
     def get(cls, **kwargs):
+        """
+        :param kwargs: Attributes for the target record to fetch from the database, the values must be unique
+        across all table records
+        :return:
+        :raises: ObjectDoesNotExistError if no such record in the table
+        :raises : MultipleObjectsError if there are multiple objects matchiing query
+        :raises: InvalidArgumentsError when given wrong arguments
+        """
+        if not kwargs:
+            raise InvalidArgumentsError("Yo must provide at least one keyword argument, none was provided")
         db = SqliteDb.getDatabase()
-        data = db.getRecord(cls(**kwargs))
-        db.close()
-        return cls(**data)
+        try:
+            data = db.getRecord(cls(**kwargs))
+            db.close()
+            return cls(**data)
+        except ObjectDoesNotExistError as e:
+            raise e
+        except MultipleObjectsError as e:
+            raise e
 
     def delete(self):
         pass

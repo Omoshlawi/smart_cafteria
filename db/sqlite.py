@@ -2,6 +2,7 @@ import sqlite3
 import typing
 from sqlite3 import Error, Connection
 
+from core.exceptions import ObjectDoesNotExistError, MultipleObjectsError
 from settings import SQLITE_DATABASE
 from utils.utilities import get_sql_fields
 
@@ -37,7 +38,31 @@ class SqliteDb:
         try:
             c = self._connection.cursor()
             c.execute(sql, values)
-            return dict(zip(all_fields, c.fetchone()))
+            row = c.fetchone()
+            c.close()
+            if row:
+                if self._hasMultiple(model):
+                    raise MultipleObjectsError()
+                else:
+                    return dict(zip(all_fields, row))
+            else:
+                raise ObjectDoesNotExistError()
+        except Error as e:
+            raise e
+
+    def _hasMultiple(self, model) ->bool:
+        all_fields = model.get_filed_name()
+        fields = model.get_valid_fields()
+        values = tuple(getattr(model, f).value for f in fields)
+        sql = f"""
+                SELECT {', '.join(all_fields)} FROM {model._meta.table_name} WHERE {'=? AND '.join(fields)}=?;
+                """
+        try:
+            c = self._connection.cursor()
+            c.execute(sql, values)
+            rows = c.fetchall()
+            c.close()
+            return len(rows) > 1
         except Error as e:
             raise e
 
