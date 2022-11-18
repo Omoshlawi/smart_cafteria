@@ -4,7 +4,6 @@ from sqlite3 import Error, Connection
 
 from core.exceptions import ObjectDoesNotExistError, MultipleObjectsError
 from settings import SQLITE_DATABASE
-from utils.utilities import get_sql_fields
 
 CURRENT_SQL_TIME = "SELECT datetime('now', 'localtime');"
 
@@ -81,7 +80,7 @@ class SqliteDb:
     def createTable(self, model):
         sql = f"""
                 CREATE TABLE IF NOT EXISTS  {model._meta.table_name} (
-                    {get_sql_fields(model)}
+                    {self.get_sql_fields(model)}
                 );
         """
         try:
@@ -234,3 +233,11 @@ class SqliteDb:
             return [dict(zip(all_fields, row)) for row in rows]
         except Error as e:
             raise e
+
+    @staticmethod
+    def get_sql_fields(model):
+        sql_fields = []
+        for field in model.get_filed_name():
+            f = getattr(model, field)
+            sql_fields.append(f"{field} {f.getSqlType()}")
+        return ", ".join(sql_fields)

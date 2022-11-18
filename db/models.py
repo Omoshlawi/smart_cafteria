@@ -175,6 +175,7 @@ class Model(Manager):
         :raises : MultipleObjectsError if there are multiple objects matchiing query
         :raises: InvalidArgumentsError when given wrong arguments
         """
+        # TODO USE FILTER HERE AND CHECK LENGTH TO DECIDE ERROR TO THROW FOR CODE REUSABILITY
         if not kwargs:
             raise InvalidArgumentsError("Yo must provide at least one keyword argument, none was provided")
         db = SqliteDb.getDatabase()
