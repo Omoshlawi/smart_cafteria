@@ -3,7 +3,7 @@ import re as regex
 import typing
 
 from .manager import Manager
-from .sqlite import getDatabase, drop_table, create_table, getSchema, insert
+from .sqlite import SqliteDb
 
 VALID_EMAIL = regex.compile("[a-z | A-Z |0-9|\.]+@[A-Z|a-z\.]+")
 
@@ -114,33 +114,6 @@ class Model(Manager):
         if not self.is_db_up_to_date():
             # TODO
             pass
-
-    def is_db_up_to_date(self) -> bool:
-        up_to_date = False
-        """
-        Checks if database schemer is up to date
-        :return: boolean
-        """
-        conn = getDatabase()
-        if conn:
-            # print(drop_table(conn, self))
-            if create_table(conn, self):
-                schema = getSchema(conn, self._meta.table_name)
-                _fields = self.get_filed_name()
-                for field in schema:
-                    _, name, type_, null, default, pk = field
-                    changed = f"{type_} {'NOT NULL' if null else 'NULL'} {f'DEFAULT {default}' if default else ''}".strip() != getattr(
-                        self, name).getSqlType().strip() and name != 'id_'
-                    if changed:
-                        # destroya table and recreat TODO, ONLY ALTER THE CHANGES BUT DON'T DESTROY
-                        drop_table(conn, self)
-                        create_table(conn, self)
-                        break
-        else:
-            pass
-            #  TODO ADD CODE TO CORRECT CONFLICTING DB SCHEMER
-        conn.close()
-        return up_to_date
 
     def _get_inst_attrs(self):
         return [attr for attr in self.__dict__ if not attr.startswith("_")]
