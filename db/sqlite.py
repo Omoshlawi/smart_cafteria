@@ -34,17 +34,15 @@ class SqliteDb:
         sql = f"""
         SELECT {', '.join(all_fields)} FROM {model._meta.table_name} WHERE {'=? AND '.join(fields)}=?;
         """
-        # print(sql)
+        if self._hasMultiple(model):
+            raise MultipleObjectsError()
         try:
             c = self._connection.cursor()
             c.execute(sql, values)
             row = c.fetchone()
             c.close()
             if row:
-                if self._hasMultiple(model):
-                    raise MultipleObjectsError()
-                else:
-                    return dict(zip(all_fields, row))
+                return dict(zip(all_fields, row))
             else:
                 raise ObjectDoesNotExistError()
         except Error as e:
@@ -199,5 +197,40 @@ class SqliteDb:
             c.execute(sql, (model.id_.value,))
             self._connection.commit()
             c.close()
+        except Error as e:
+            raise e
+
+    def getRecords(self, model) -> typing.List[typing.Dict]:
+        """
+        :param model:
+        :return:
+        """
+        all_fields = model.get_filed_name()
+        sql = f"""
+                SELECT {', '.join(all_fields)} FROM {model._meta.table_name};
+                """
+        try:
+            c = self._connection.cursor()
+            c.execute(sql)
+            rows = c.fetchall()
+            c.close()
+            return [dict(zip(all_fields, row)) for row in rows]
+        except Error as e:
+            raise e
+
+    def filterRecord(self, model) -> typing.List[typing.Dict]:
+        all_fields = model.get_filed_name()
+        fields = model.get_valid_fields()
+        values = tuple(getattr(model, f).value for f in fields)
+        sql = f"""
+        SELECT {', '.join(all_fields)} FROM {model._meta.table_name} WHERE {'=? AND '.join(fields)}=?;
+        """
+        # print(sql)
+        try:
+            c = self._connection.cursor()
+            c.execute(sql, values)
+            rows = c.fetchall()
+            c.close()
+            return [dict(zip(all_fields, row)) for row in rows]
         except Error as e:
             raise e

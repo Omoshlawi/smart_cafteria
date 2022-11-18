@@ -192,10 +192,17 @@ class Model(Manager):
         db.delete(self)
         db.close()
 
-    def all(self) -> typing.List['Model']:
-        print(self._meta.table_name)
-        return []
+    @classmethod
+    def all(cls):
+        db = SqliteDb.getDatabase()
+        records = db.getRecords(cls())
+        db.close()
+        return map(lambda x: cls(**x), records)
 
-    def filter(self, **kwargs):
-        for field in kwargs:
-            pass
+    @classmethod
+    def filter(cls, **kwargs):
+        db = SqliteDb.getDatabase()
+        records = db.filterRecord(cls(**kwargs))
+        db.close()
+        # print(records)
+        return map(lambda x: cls(**x), records)

@@ -3,10 +3,12 @@ class Manager:
     def get(cls, **kwargs):
         raise NotImplementedError()
 
-    def filter(self, **kwargs):
+    @classmethod
+    def filter(cls, **kwargs):
         raise NotImplementedError()
 
-    def all(self):
+    @classmethod
+    def all(cls):
         raise NotImplementedError()
 
     @classmethod

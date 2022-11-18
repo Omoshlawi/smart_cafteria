@@ -1,12 +1,9 @@
 from auth.models import User
-from db import models
-from students.models import Student
-from students.view import MainWindow
-from utils.utilities import get_sql_fields
 
-user = User.get(id_=7)
-user.delete()
-# print(user)
+users = User.filter(username="Mother")
+for u in users:
+    print(u)
+# print(users)
 # user.save()
 # ui = MainWindow()
 # f = models.BooleanField(default=True)

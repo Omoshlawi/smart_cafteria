@@ -17,6 +17,9 @@ class User(models.Model):
     def __str__(self):
         return str(self.username)
 
+    def __repr__(self):
+        return str(self)
+
     def login(self):
         raise NotImplemented()
 
