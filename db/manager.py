@@ -8,5 +8,5 @@ class Manager:
     def all(self):
         raise NotImplementedError()
 
-    def create(self, **kwargs):
+    def create(self, **kwargs) -> 'Manager':
         raise NotImplementedError()

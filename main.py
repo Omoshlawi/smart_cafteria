@@ -2,8 +2,13 @@ from auth.models import User
 from db import models
 from students.models import Student
 from students.view import MainWindow
-user = User(username="Omosh", last_name='12')
+from utils.utilities import get_sql_fields
+
+user = User(username="Omosh", last_name='12', password="jeff", first_name="lawi")
+print(user.create())
 # ui = MainWindow()
 # f = models.BooleanField(default=True)
 # f.setValue("hellow@gmail.com")
-print([getattr(user, f) for f in user.get_filed_name()])
+# print(get_sql_fields(user))
+# print([getattr(user, f) for f in user.get_filed_name()])
+# print(user.check_password("jeff"))
