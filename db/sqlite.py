@@ -50,7 +50,7 @@ class SqliteDb:
         except Error as e:
             raise e
 
-    def _hasMultiple(self, model) ->bool:
+    def _hasMultiple(self, model) -> bool:
         all_fields = model.get_filed_name()
         fields = model.get_valid_fields()
         values = tuple(getattr(model, f).value for f in fields)
@@ -189,3 +189,15 @@ class SqliteDb:
         else:
             self.createTable(model)
         return False
+
+    def delete(self, model):
+        sql = f"""
+        DELETE FROM {model._meta.table_name} WHERE id_=?
+        """
+        try:
+            c = self._connection.cursor()
+            c.execute(sql, (model.id_.value,))
+            self._connection.commit()
+            c.close()
+        except Error as e:
+            raise e

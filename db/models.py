@@ -133,12 +133,13 @@ class Model(Manager):
 
     @classmethod
     def create(cls, **kwargs):
+        # TODO STILL MESSY,DOESNT RETURN THE CREATED WELL AS I WANT
         db = SqliteDb.getDatabase()
         model = cls(**kwargs)
         db.insert(model)
+        _model = cls.get(**kwargs)
         db.close()
-        # TODO, UPDATE ALSO THE ID
-        return model
+        return _model
         # return db.schemaChanged(self)
 
     class Meta:
@@ -160,7 +161,6 @@ class Model(Manager):
                 db.close()
             else:
                 kwargs = {key: getattr(self, key).value for key in self.get_valid_fields()}
-                # print(kwargs)
                 return self.create(**kwargs)
         else:
             pass
@@ -188,7 +188,9 @@ class Model(Manager):
             raise e
 
     def delete(self):
-        pass
+        db = SqliteDb.getDatabase()
+        db.delete(self)
+        db.close()
 
     def all(self) -> typing.List['Model']:
         print(self._meta.table_name)
