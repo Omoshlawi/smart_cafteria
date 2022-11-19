@@ -304,7 +304,7 @@ class Model(Manager):
         return tuple([field[0] for field in self.get_class_attrs()])
 
     def get_valid_fields(self) -> typing.Tuple:
-        return tuple([f for f in self.get_filed_name() if getattr(self, f)._valid])
+        return tuple([f for f in self.get_filed_name() if getattr(self, f).valid])
 
     @classmethod
     def create(cls, **kwargs):
@@ -376,7 +376,7 @@ class Model(Manager):
     @classmethod
     def filter(cls, **kwargs):
         db = SqliteDb.getDatabase()
-        records = db.filterRecord(cls(**kwargs))
+        records = db.filterRecord(cls(**kwargs), kwargs)
         db.close()
         # print(records)
         return map(lambda x: cls(**x), records)

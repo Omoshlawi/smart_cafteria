@@ -27,28 +27,6 @@ class SqliteDb:
         except Error as e:
             raise e
 
-    def getRecord(self, model, search_fields):
-        all_fields = model.get_filed_name()
-        fields = tuple(search_fields.keys())
-        values = tuple(getattr(model, f).value for f in fields)
-        sql = f"""
-        SELECT {', '.join(all_fields)} FROM {model._meta.table_name} WHERE {'=? AND '.join(fields)}=?;
-        """
-        # print(dict(zip(fields, values)))
-        if self._hasMultiple(model):
-            raise MultipleObjectsError()
-        try:
-            c = self._connection.cursor()
-            c.execute(sql, values)
-            row = c.fetchone()
-            c.close()
-            if row:
-                return dict(zip(all_fields, row))
-            else:
-                raise ObjectDoesNotExistError()
-        except Error as e:
-            raise e
-
     def _hasMultiple(self, model) -> bool:
         all_fields = model.get_filed_name()
         fields = model.get_valid_fields()
@@ -308,9 +286,31 @@ class SqliteDb:
         except Error as e:
             raise e
 
-    def filterRecord(self, model) -> typing.List[typing.Dict]:
+    def getRecord(self, model, search_fields):
         all_fields = model.get_filed_name()
-        fields = model.get_valid_fields()
+        fields = tuple(search_fields.keys())
+        values = tuple(getattr(model, f).value for f in fields)
+        sql = f"""
+        SELECT {', '.join(all_fields)} FROM {model._meta.table_name} WHERE {'=? AND '.join(fields)}=?;
+        """
+        # print(dict(zip(fields, values)))
+        if self._hasMultiple(model):
+            raise MultipleObjectsError()
+        try:
+            c = self._connection.cursor()
+            c.execute(sql, values)
+            row = c.fetchone()
+            c.close()
+            if row:
+                return dict(zip(all_fields, row))
+            else:
+                raise ObjectDoesNotExistError()
+        except Error as e:
+            raise e
+
+    def filterRecord(self, model, filter_fields: dict) -> typing.List[typing.Dict]:
+        all_fields = model.get_filed_name()
+        fields = tuple(filter_fields.keys())
         values = tuple(getattr(model, f).value for f in fields)
         sql = f"""
         SELECT {', '.join(all_fields)} FROM {model._meta.table_name} WHERE {'=? AND '.join(fields)}=?;
