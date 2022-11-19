@@ -1,3 +1,4 @@
+import os
 import sqlite3
 import typing
 from sqlite3 import Error, Connection
@@ -63,11 +64,71 @@ class SqliteDb:
         except Error as e:
             raise e
 
+    def fullBackUp(self, path: str):
+        # TODO full back up on diSK
+        """
+        BACKUP DATABASE <databasename>
+        TO DISK = '<filepath>';
+        :return:
+        """
+        name = '<dbName>.bak'
+        sql = f"""
+        BACKUP DATABASE <dbName>
+            TO DISK = '{os.path.join(path, name)}';
+        """
+        try:
+            raise NotImplementedError()
+            # c = self._connection.cursor()
+            # c.execute(sql)
+            # c.close()
+        except Error as e:
+            raise e
+
+    def deferentialBackUp(self, path: str):
+        # TODO deferential back up on diSK
+        """
+        Tip: A differential back up reduces the back up time (since only the changes are backed up).
+        BACKUP DATABASE <databasename>
+        TO DISK = 'filepath'
+        WITH DIFFERENTIAL;
+        :return:
+        """
+        name = '<dbName>.bak'
+        sql = f"""
+            BACKUP DATABASE testDB
+            TO DISK = '{os.path.join(path, name)}'
+            WITH DIFFERENTIAL;
+                """
+        try:
+            raise NotImplementedError()
+            # c = self._connection.cursor()
+            # c.execute(sql)
+            # c.close()
+        except Error as e:
+            raise e
+
     def alterTable(self, model):
+        """
+        Alter table column for:
+            SQL Server / MS Access::
+                ALTER TABLE table_name
+                ALTER COLUMN column_name datatype;
+            My SQL / Oracle (prior version 10G):
+                ALTER TABLE table_name
+                MODIFY COLUMN column_name datatype;
+            Oracle 10G and later:
+                ALTER TABLE table_name
+                MODIFY column_name datatype;
+
+
+
+        :param model:
+        :return:
+        """
         # TODO Implement my sl
         altered = False
-        sql = """
-        ALTER 
+        sql = f"""
+        ALTER TABLE {model._meta.table_name}
         """
         try:
             c = self._connection.cursor()
@@ -78,17 +139,48 @@ class SqliteDb:
         return altered
 
     def createTable(self, model):
+        """
+
+        :param model:
+        :return:
+        """
         sql = f"""
                 CREATE TABLE IF NOT EXISTS  {model._meta.table_name} (
                     {self.get_sql_fields(model)}
                 );
         """
+        # print(sql)
         try:
             c = self._connection.cursor()
             c.execute(sql)
             c.close()
         except Error as e:
             raise e
+
+    def createTableFromAnother(self, modelNew, modelTarget):
+        """
+        A copy of an existing table can also be created using CREATE TABLE.
+        The new table gets the same column definitions. All columns or specific
+        columns can be selected.
+        If you create a new table using an existing table, the new table will
+        be filled with the existing values from the old table.
+
+        :param modelNew:
+        :param modelTarget:
+        :return:
+
+        :example
+        CREATE TABLE newTable AS
+        SELECT customername, contactname
+        FROM customers;
+
+        :syntax
+        CREATE TABLE new_table_name AS
+        SELECT column1, column2,...
+        FROM existing_table_name
+        WHERE ....;
+        """
+        raise NotImplementedError()
 
     def insert(self, model):
         """
@@ -177,9 +269,7 @@ class SqliteDb:
             schema = self.getSchema(model)
             for field in schema:
                 _, name, type_, null, default, pk = field
-                changed = f"{type_} {'NOT NULL' if null else 'NULL'} " \
-                          f"{f'DEFAULT {default}' if default else ''}" \
-                          f"".strip() != getattr(self, name).getSqlType().strip() and name != 'id_'
+                changed = True
                 if changed:
                     # TODO SHOULD RETURN THE FIELDS THAT CHANGES ARE DETECTED IN
                     return True
@@ -234,10 +324,50 @@ class SqliteDb:
         except Error as e:
             raise e
 
+    def createIndex(self, model):
+        indexed = model.getIndexFields()
+        for i in indexed:
+            sql = f"""
+            CREATE INDEX idx_{i} ON {model._meta.table_name} ({i});
+            """
+            try:
+                c = self._connection.cursor()
+                c.execute(sql)
+                c.close()
+            except Error as e:
+                raise e
+
+    def createMultiColumnIndex(self, model):
+        index = model.getValidMultiFieldIndex()
+        name = "_".join(index)
+        sql = f"""
+        CREATE INDEX idx_{name} ON {model._meta.table_name} ({", ".join(index)});
+        """
+        try:
+            c = self._connection.cursor()
+            c.execute(sql)
+            c.close()
+        except Error as e:
+            raise e
+
+    def getIndexes(self, model):
+        sql = f"""
+        SHOW INDEXES IN {model._meta.table_name}
+        """
+        try:
+            c = self._connection.cursor()
+            c.execute(sql)
+            c.close()
+        except Error as e:
+            raise e
+
     @staticmethod
     def get_sql_fields(model):
-        sql_fields = []
-        for field in model.get_filed_name():
-            f = getattr(model, field)
-            sql_fields.append(f"{field} {f.getSqlType()}")
-        return ", ".join(sql_fields)
+        sql_fields = [getattr(model, field).getSqlType(field) for field in model.get_filed_name()]
+        related_fields = [
+            getattr(model, field).getSqKey(field) for field in model.get_filed_name()
+            if getattr(model, field).fk or getattr(model, field).pk and getattr(model, field).getSqKey(field)
+        ]
+
+        sql_fields.extend(related_fields)
+        return ", \n".join(sql_fields)
