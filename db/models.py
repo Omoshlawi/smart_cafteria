@@ -228,6 +228,23 @@ class PasswordField(CharacterField):
         self._valid = len(value) >= isinstance(value, str) and self._max_length
 
 
+class TextField(AbstractField):
+    def __init__(self, default=None, null=False):
+        super().__init__(default=default, null=null, unique=False, index=False, primary_key=False)
+        self._type = "TEXT"
+
+    def getSqlType(self, field_name) -> str:
+        return f"{field_name} {self._type} {f'DEFAULT {self._default}' if self._default is not None else ''}" \
+               f"{'NULL' if self._null else 'NOT NULL'}"
+
+    def validate(self, value) -> bool:
+        return isinstance(value, str) or isinstance(value, float)
+
+    def setValue(self, value):
+        self._valid = self.validate(value)
+        self._value = str(value)
+
+
 class DecimalField(AbstractField):
     def __init__(self, max_digits, decimal_places, default=None, null=False, unique=False, index=False,
                  primary_key=False):
@@ -249,7 +266,8 @@ class DecimalField(AbstractField):
 
     def getSqlType(self, field_name) -> str:
         return f"{field_name} {self._type} {f'DEFAULT {self._default}' if self._default is not None else ''}" \
-               f" {'UNIQUE' if self._unique and not self._pk else ''}"
+               f" {'UNIQUE' if self._unique and not self._pk else ''} " \
+               f"{'NULL' if self._null and not self._pk else 'NOT NULL'}"
 
 
 class PositiveIntegerField(AbstractField):
