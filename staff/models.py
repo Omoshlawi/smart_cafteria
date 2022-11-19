@@ -1,4 +1,4 @@
-from db.models import Model
+from db import models
 
-class Staff(Model):
-    pass
+
+

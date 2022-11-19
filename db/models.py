@@ -205,8 +205,12 @@ class EmailField(CharacterField):
 
 
 class BooleanField(AbstractField):
+    def __init__(self, default=None, null=False, unique=False, index=False, primary_key=False):
+        super().__init__(default, null, unique, index, primary_key)
+        self._type = "INT"
+
     def getSqlType(self, field_name) -> str:
-        return f"{field_name} INT {'NULL' if self._null else 'NOT NULL'}" \
+        return f"{field_name} {self._type} {'NULL' if self._null else 'NOT NULL'}" \
                f" {'DEFAULT 1' if self._value and self._valid else 'DEFAULT 0'}"
 
     def validate(self, value) -> bool:
@@ -222,6 +226,30 @@ class PasswordField(CharacterField):
     def setValue(self, value):
         self._value = hashlib.sha256(str(value).encode()).hexdigest()
         self._valid = len(value) >= isinstance(value, str) and self._max_length
+
+
+class DecimalField(AbstractField):
+    def __init__(self, max_digits, decimal_places, default=None, null=False, unique=False, index=False,
+                 primary_key=False):
+        super().__init__(default, null, unique, index, primary_key)
+        self._max_digits = max_digits
+        self._decimal_places = decimal_places
+        self._type = f'DECIMAL ({max_digits}, {decimal_places})'
+
+    @property
+    def maxDigits(self):
+        return self._max_digits
+
+    @property
+    def decimalPlaces(self):
+        return self._decimal_places
+
+    def validate(self, value) -> bool:
+        return (isinstance(value, int) or isinstance(value, float)) and len(str(value)) <= self._max_digits
+
+    def getSqlType(self, field_name) -> str:
+        return f"{field_name} {self._type} {f'DEFAULT {self._default}' if self._default is not None else ''}" \
+               f" {'UNIQUE' if self._unique and not self._pk else ''}"
 
 
 class PositiveIntegerField(AbstractField):
