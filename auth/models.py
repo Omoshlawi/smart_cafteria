@@ -30,7 +30,3 @@ class User(models.Model):
         _password = hashlib.sha256(password.encode()).hexdigest()
         return _password == self.password.value
 
-    def _get_class_attrs(self) -> typing.Tuple[typing.Tuple[str, typing.Any]]:
-        attributes = inspect.getmembers(User, lambda a: not (inspect.isroutine(a)) and not (inspect.isclass(a)))
-        attributes = [attr for attr in attributes if not attr[0].startswith("_")]
-        return tuple(attributes)

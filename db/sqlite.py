@@ -27,13 +27,14 @@ class SqliteDb:
         except Error as e:
             raise e
 
-    def getRecord(self, model):
+    def getRecord(self, model, search_fields):
         all_fields = model.get_filed_name()
-        fields = model.get_valid_fields()
+        fields = tuple(search_fields.keys())
         values = tuple(getattr(model, f).value for f in fields)
         sql = f"""
         SELECT {', '.join(all_fields)} FROM {model._meta.table_name} WHERE {'=? AND '.join(fields)}=?;
         """
+        # print(dict(zip(fields, values)))
         if self._hasMultiple(model):
             raise MultipleObjectsError()
         try:
@@ -206,11 +207,11 @@ class SqliteDb:
 
     def update(self, model):
         fields = list(model.get_valid_fields())
-        fields.remove('id_')
+        fields.remove(model.getPk())
         values = [getattr(model, f).value for f in fields]
-        values.append(model.id_.value)
+        values.append(getattr(model, model.getPk()).value)
         sql = f"""
-        UPDATE {model._meta.table_name} SET {'=?, '.join(fields)}=? WHERE id_=?;
+        UPDATE {model._meta.table_name} SET {'=?, '.join(fields)}=? WHERE {model.getPk()}=?;
         """
         try:
             c = self._connection.cursor()

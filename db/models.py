@@ -1,5 +1,6 @@
 import enum
 import hashlib
+import inspect
 import re as regex
 import typing
 from datetime import datetime
@@ -50,12 +51,12 @@ class BaseAbstractField:
     def index(self):
         return self._index
 
-    def validate(self) -> bool:
+    def validate(self, value) -> bool:
         raise NotImplementedError()
 
     def setValue(self, value):
+        self._valid = self.validate(value)
         self._value = value
-        self._valid = self.validate()
 
     def __str__(self):
         if self._valid:
@@ -87,9 +88,11 @@ class AbstractField(BaseAbstractField):
         self._index = index
         self._default = default
         self._pk = primary_key
+        if self._default is not None:
+            self.setValue(default)
 
-    def validate(self) -> bool:
-        return super(AbstractField, self).validate()
+    def validate(self, value) -> bool:
+        return super(AbstractField, self).validate(value)
 
     def getSqlType(self, field_name) -> str:
         return super(AbstractField, self).getSqlType(field_name)
@@ -99,11 +102,22 @@ class DateTimeField(AbstractField):
     def __init__(self, default=None, null=False, index=False):
         super().__init__(default=default, null=null, unique=False, index=index, primary_key=False)
         self._type = 'DATETIME'
-        if self._default is not None:
-            self.setValue(default)
 
-    def validate(self) -> bool:
-        return isinstance(self._value, datetime)
+    def setValue(self, value):
+        self._valid = self.validate(value)
+        self._value = str(value)
+
+    def validate(self, value) -> bool:
+        if isinstance(value, datetime):
+            return True
+        elif isinstance(value, str):
+            try:
+                datetime.fromisoformat(value)
+                return True
+            except Exception as e:
+                return False
+        else:
+            return False
 
     def getSqlType(self, field_name) -> str:
         d = f"'{self._default}'"
@@ -124,8 +138,8 @@ class RelationShipField(BaseAbstractField):
         self.related_name = related_name
         self._type = "INTEGER"
 
-    def validate(self) -> bool:
-        return isinstance(self._value, int) and self._value > -1
+    def validate(self, value) -> bool:
+        return isinstance(value, int) and value > -1
 
     def getSqKey(self, field_name) -> str:
         if self.fk:
@@ -145,6 +159,10 @@ class OneToOneField(RelationShipField):
 
 
 class ForeignKeyField(RelationShipField):
+    """
+    Foreign keys must be adedd after all other fields else it thrown a syntax error
+    """
+
     def __init__(self, cls, on_delete: OnRelationShipModified, related_name: str = None):
         super().__init__(cls, on_delete, related_name)
         self._pk = False
@@ -159,8 +177,8 @@ class CharacterField(AbstractField):
         if self._default is not None:
             self.setValue(default)
 
-    def validate(self) -> bool:
-        return isinstance(self._value, str) and len(self._value) <= self._max_length
+    def validate(self, value) -> bool:
+        return isinstance(value, str) and len(value) <= self._max_length
 
     def getSqlType(self, field_name) -> str:
         return f"{field_name} {self._type} {self._getSqlPrimaryKey()} {self._getSqlNull()}" \
@@ -182,17 +200,17 @@ class CharacterField(AbstractField):
 
 
 class EmailField(CharacterField):
-    def validate(self) -> bool:
-        return super(EmailField, self).validate() and (True if VALID_EMAIL.fullmatch(self._value) else False)
+    def validate(self, value) -> bool:
+        return super(EmailField, self).validate(value) and (True if VALID_EMAIL.fullmatch(value) else False)
 
 
 class BooleanField(AbstractField):
     def getSqlType(self, field_name) -> str:
         return f"{field_name} INT {'NULL' if self._null else 'NOT NULL'}" \
-               f" {'DEFAULT 1' if self._value == True and self._valid == True else 'DEFAULT 0'}"
+               f" {'DEFAULT 1' if self._value and self._valid else 'DEFAULT 0'}"
 
-    def validate(self) -> bool:
-        return isinstance(self._value, bool)
+    def validate(self, value) -> bool:
+        return isinstance(value, bool)
 
 
 class PasswordField(CharacterField):
@@ -212,8 +230,8 @@ class PositiveIntegerField(AbstractField):
         super().__init__(default=default, null=null, unique=unique, index=index, primary_key=primary_key)
         self._auto_increment = auto_increment
 
-    def validate(self) -> bool:
-        return isinstance(self._value, int) and self._value >= 0
+    def validate(self, value) -> bool:
+        return isinstance(value, int) and value >= 0
 
     def getSqlType(self, field_name) -> str:
         return f"{field_name} INTEGER {'NULL' if self._null and not self._pk else 'NOT NULL'}" \
@@ -230,7 +248,7 @@ class Model(Manager):
         super().__init__()
         self._validate_kwargs(kwargs)
         self._meta = Model.Meta(self)
-        for key, value in self._get_class_attrs():
+        for key, value in self.get_class_attrs():
             try:
                 if isinstance(value, BooleanField):
                     value.setValue(value.value == 1)
@@ -276,11 +294,14 @@ class Model(Manager):
         return [attr for attr in self.__dict__ if not attr.startswith("_")]
         # return Model.__dict__
 
-    def _get_class_attrs(self) -> typing.Tuple[typing.Tuple[str, typing.Any]]:
-        raise NotImplementedError()
+    @classmethod
+    def get_class_attrs(cls) -> typing.Tuple[typing.Tuple[str, typing.Any]]:
+        attributes = inspect.getmembers(cls, lambda a: not (inspect.isroutine(a)) and not (inspect.isclass(a)))
+        attributes = [attr for attr in attributes if not attr[0].startswith("_")]
+        return tuple(attributes)
 
     def get_filed_name(self) -> typing.Tuple:
-        return tuple([field[0] for field in self._get_class_attrs()])
+        return tuple([field[0] for field in self.get_class_attrs()])
 
     def get_valid_fields(self) -> typing.Tuple:
         return tuple([f for f in self.get_filed_name() if getattr(self, f)._valid])
@@ -304,20 +325,18 @@ class Model(Manager):
             if not self.table_name:
                 self.table_name = model.__class__.__name__
 
-    def save(self, commit=True) -> 'Model':
-        model = None
-        if commit:
-            if self.id_._valid:
-                # performs update
-                db = SqliteDb.getDatabase()
-                db.update(self)
-                model = self
-                db.close()
-            else:
-                kwargs = {key: getattr(self, key).value for key in self.get_valid_fields()}
-                return self.create(**kwargs)
+    def save(self) -> 'Model':
+        if getattr(self, self.getPk()).valid:
+            # performs update
+            db = SqliteDb.getDatabase()
+            db.update(self)
+            model = self
+            db.close()
         else:
-            pass
+            kwargs = {key: getattr(self, key).value for key in self.get_valid_fields()}
+            model = self.create(**kwargs)
+            setattr(self, self.getPk(), getattr(model, model.getPk()))
+            return self
 
     @classmethod
     def get(cls, **kwargs):
@@ -334,7 +353,7 @@ class Model(Manager):
             raise InvalidArgumentsError("Yo must provide at least one keyword argument, none was provided")
         db = SqliteDb.getDatabase()
         try:
-            data = db.getRecord(cls(**kwargs))
+            data = db.getRecord(cls(**kwargs), kwargs)
             db.close()
             return cls(**data)
         except ObjectDoesNotExistError as e:

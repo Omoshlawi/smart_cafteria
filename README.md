@@ -304,3 +304,109 @@ DROP INDEX index_name;
 ALTER TABLE table_name
 DROP INDEX index_name;
 ```
+
+Syntax for MySQL
+The following SQL statement defines the "Personid" column to be an auto-increment primary key 
+field in the "Persons" table:
+
+```
+    CREATE TABLE Persons (
+        Personid int NOT NULL AUTO_INCREMENT,
+        LastName varchar(255) NOT NULL,
+        FirstName varchar(255),
+        Age int,
+        PRIMARY KEY (Personid)
+    );
+    
+    //By default, the starting value for AUTO_INCREMENT is 1, and it will increment by 1 for each new record.
+
+    //To let the AUTO_INCREMENT sequence start with another value, use the following SQL statement:
+    ALTER TABLE Persons AUTO_INCREMENT=100;
+    
+    //The MS SQL Server uses the IDENTITY keyword to perform an auto-increment feature.
+    //Tip: To specify that the "Personid" column should start at value 10 and increment by 5, 
+    //change it to IDENTITY(10,5).
+    
+    CREATE TABLE Persons (
+        Personid int IDENTITY(1,1) PRIMARY KEY,
+        LastName varchar(255) NOT NULL,
+        FirstName varchar(255),
+        Age int
+    );
+    
+    //Tip: To specify that the "Personid" column should start at value 10 and increment by 5, 
+    //change the autoincrement to AUTOINCREMENT(10,5).
+    
+    /Syntax for Oracle
+    CREATE SEQUENCE seq_person
+    MINVALUE 1
+    START WITH 1
+    INCREMENT BY 1
+    CACHE 10;
+    
+    
+```
+ ## SQL Dates
+**MySQL comes with the following data types for storing a date or a date/time value in the database:**
+
+- DATE - format YYYY-MM-DD
+- DATETIME - format: YYYY-MM-DD HH:MI:SS
+- TIMESTAMP - format: YYYY-MM-DD HH:MI:SS
+- YEAR - format YYYY or YY
+**SQL Server comes with the following data types for storing a date or a date/time value in the database:**
+
+- DATE - format YYYY-MM-DD
+- DATETIME - format: YYYY-MM-DD HH:MI:SS
+- SMALLDATETIME - format: YYYY-MM-DD HH:MI:SS
+- TIMESTAMP - format: a unique number
+- Note: The date types are chosen for a column when you create a new table in your database!
+
+
+## Sql Views
+In SQL, a view is a virtual table based on the result-set of an SQL statement.
+
+```
+    //Syntax
+    CREATE VIEW view_name AS
+    SELECT column1, column2, ...
+    FROM table_name
+    WHERE condition;
+    
+    //example creations and view
+    CREATE VIEW [Brazil Customers] AS
+    SELECT CustomerName, ContactName
+    FROM Customers
+    WHERE Country = 'Brazil';
+    
+    SELECT * FROM [Brazil Customers];
+    
+    CREATE VIEW [Products Above Average Price] AS
+    SELECT ProductName, Price
+    FROM Products
+    WHERE Price > (SELECT AVG(Price) FROM Products);
+    
+    SELECT * FROM [Products Above Average Price];
+    
+    //Updating view
+    //A view can be updated with the CREATE OR REPLACE VIEW statement.
+    
+    //syntax
+    CREATE OR REPLACE VIEW view_name AS
+    SELECT column1, column2, ...
+    FROM table_name
+    WHERE condition;
+    
+    //example
+    CREATE OR REPLACE VIEW [Brazil Customers] AS
+    SELECT CustomerName, ContactName, City
+    FROM Customers
+    WHERE Country = 'Brazil';
+    
+    //drop
+    //syntax
+    DROP VIEW view_name;
+    
+    //example
+    DROP VIEW [Brazil Customers];
+    
+```
