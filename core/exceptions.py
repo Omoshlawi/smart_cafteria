@@ -11,3 +11,8 @@ class MultipleObjectsError(BaseException):
 class InvalidArgumentsError(BaseException):
     def __init__(self, message: str = "Invalid arguments provided"):
         super(InvalidArgumentsError, self).__init__(message)
+
+
+class TemplateDoesNotExistError(BaseException):
+    def __init__(self, path: str):
+        super(TemplateDoesNotExistError, self).__init__(f"Provided template {path} Doesn exits")

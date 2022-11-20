@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>637</width>
-    <height>702</height>
+    <height>802</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,21 +25,24 @@
     </property>
     <layout class="QGridLayout" name="baseLayout">
      <item row="0" column="0">
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
        <item>
         <widget class="QLabel" name="vs_logo">
          <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label">
-         <property name="styleSheet">
-          <string notr="true">font: 60pt &quot;Sitka Heading&quot;;</string>
-         </property>
-         <property name="text">
-          <string>Smart Cafteria</string>
+          <string>logo</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -47,15 +50,21 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="jk_logo">
-         <property name="text">
-          <string/>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
-        </widget>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </item>
-     <item row="1" column="0">
+     <item row="2" column="0">
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -67,6 +76,19 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label">
+       <property name="styleSheet">
+        <string notr="true">font: 60pt &quot;Sitka Heading&quot;;</string>
+       </property>
+       <property name="text">
+        <string>Smart Cafteria</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
