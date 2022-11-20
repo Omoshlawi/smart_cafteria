@@ -1,0 +1,6 @@
+QLabel#vs_logo{
+    margin-top: 20px;
+}
+QLabel#jk_logo{
+
+}

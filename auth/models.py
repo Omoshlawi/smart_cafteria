@@ -30,3 +30,9 @@ class User(models.Model):
         _password = hashlib.sha256(password.encode()).hexdigest()
         return _password == self.password.value
 
+    def get_full_name(self):
+        return f"{self.first_name.value if self.first_name.valid else ''} " \
+               f"{self.last_name.value if self.last_name.valid else ''}"
+
+
+
