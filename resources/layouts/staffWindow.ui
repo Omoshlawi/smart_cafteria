@@ -20,89 +20,111 @@
       <x>10</x>
       <y>10</y>
       <width>711</width>
-      <height>391</height>
+      <height>396</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="baseLayout">
-     <item row="2" column="1">
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="Line" name="line">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="2" column="2">
-      <spacer name="verticalSpacer">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
+     <property name="leftMargin">
+      <number>10</number>
+     </property>
+     <property name="topMargin">
+      <number>10</number>
+     </property>
+     <property name="rightMargin">
+      <number>10</number>
+     </property>
+     <property name="bottomMargin">
+      <number>10</number>
+     </property>
      <item row="0" column="0">
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>logo</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QLabel" name="jkuat_logo">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="QLabel" name="label">
+         <property name="styleSheet">
+          <string notr="true">font: 16pt &quot;Sylfaen&quot;;</string>
+         </property>
          <property name="text">
           <string>Admin Panel</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
          </property>
         </widget>
        </item>
       </layout>
-     </item>
-     <item row="3" column="2">
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
      </item>
      <item row="2" column="0" rowspan="2">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
-          <widget class="QCommandLinkButton" name="commandLinkButton">
+          <widget class="QCommandLinkButton" name="manageStudents">
            <property name="text">
-            <string>CommandLinkButton</string>
+            <string>Students</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCommandLinkButton" name="commandLinkButton_2">
+          <widget class="QCommandLinkButton" name="manageStaff">
            <property name="text">
-            <string>CommandLinkButton</string>
+            <string>Staff</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCommandLinkButton" name="commandLinkButton_3">
+          <widget class="QCommandLinkButton" name="manageSales">
            <property name="text">
-            <string>CommandLinkButton</string>
+            <string>Sales / Purchase</string>
            </property>
           </widget>
+         </item>
+         <item>
+          <widget class="QCommandLinkButton" name="manageFood">
+           <property name="text">
+            <string>Food</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCommandLinkButton" name="dashBord">
+           <property name="text">
+            <string>DashBoard</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCommandLinkButton" name="Accounts">
+           <property name="text">
+            <string>Accounts</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </item>
@@ -131,14 +153,14 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label_4">
+        <widget class="QLabel" name="user">
          <property name="text">
           <string>user</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label_3">
+        <widget class="QLabel" name="vstec_logo">
          <property name="text">
           <string>logo</string>
          </property>
@@ -157,6 +179,20 @@
        </item>
       </layout>
      </item>
+     <item row="2" column="2" rowspan="2">
+      <widget class="QWidget" name="contentWidget" native="true"/>
+     </item>
+     <item row="2" column="1" rowspan="2">
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
     </layout>
    </widget>
   </widget>
@@ -166,7 +202,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

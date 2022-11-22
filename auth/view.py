@@ -2,7 +2,7 @@ from typing import cast
 
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import QDialog, QLabel, QLineEdit, QCheckBox, QPushButton
-
+from settings import CASHIER_NUMBER
 from auth.models import User
 from core.exceptions import ObjectDoesNotExistError, MultipleObjectsError
 from staff.views import AdminView
@@ -16,6 +16,8 @@ class LoginView(View):
     def __init__(self):
         super().__init__(QDialog(), template("login.ui"))
         self.next = None
+        self.cashier_no = cast(QLineEdit, self.window.findChild(QLineEdit, 'cashier_no'))
+        self.cashier_no.setText(str(CASHIER_NUMBER))
         self.jkuatLogo = cast(QLabel, self.window.findChild(QLabel, 'jkuatLogo'))
         self.jkuatLogo.setPixmap(QPixmap(static("jkuat-logo.webp")))
         self.jkuatLogo.setScaledContents(True)
@@ -46,9 +48,9 @@ class LoginView(View):
             self.error.setText("")
             self.success.setText("Login success!")
             if user.is_admin.value:
-                self.next = AdminView(user)
-            else:
                 self.next = StudentsView(user)
+            else:
+                self.next = AdminView(user)
             self.window.close()
 
         except ObjectDoesNotExistError as e:

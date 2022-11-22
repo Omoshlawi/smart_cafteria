@@ -45,7 +45,10 @@ class BaseAbstractField:
 
     @property
     def value(self):
-        return self._value
+        if self._valid:
+            return self._value
+        else:
+            return None
 
     @property
     def index(self):
