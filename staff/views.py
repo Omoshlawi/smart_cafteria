@@ -1,8 +1,11 @@
 from typing import cast
 
 from PyQt6.QtGui import QPixmap
-from PyQt6.QtWidgets import QMainWindow, QLabel, QWidget
+from PyQt6.QtWidgets import QMainWindow, QLabel, QVBoxLayout, QCommandLinkButton
 
+from staff.states.base import BaseManager
+from staff.states.staff import StaffManager
+from staff.states.students import StudentManager
 from utils.utilities import template, static
 from view.generics import View
 
@@ -12,7 +15,14 @@ class AdminView(View):
         self.user = user
         super(AdminView, self).__init__(QMainWindow(), template("staffWindow.ui"))
         cast(QMainWindow, self.window).centralWidget().setLayout(self.baseLayout)
-        self.currentAction = None
+        self.currentState = None
+        self.contentWidget = cast(QVBoxLayout, self.window.findChild(QVBoxLayout, 'contentWidget'))
+        self.manageStudents = cast(QCommandLinkButton, self.window.findChild(QCommandLinkButton, 'manageStudents'))
+        self.manageStaff = cast(QCommandLinkButton, self.window.findChild(QCommandLinkButton, 'manageStaff'))
+        self.manageSales = cast(QCommandLinkButton, self.window.findChild(QCommandLinkButton, 'manageSales'))
+        self.manageFood = cast(QCommandLinkButton, self.window.findChild(QCommandLinkButton, 'manageFood'))
+        self.dashBord = cast(QCommandLinkButton, self.window.findChild(QCommandLinkButton, 'dashBord'))
+        self.accounts = cast(QCommandLinkButton, self.window.findChild(QCommandLinkButton, 'accounts'))
         self.currUser = cast(QLabel, self.window.findChild(QLabel, 'user'))
         self.jkuat_logo = cast(QLabel, self.window.findChild(QLabel, 'jkuat_logo'))
         self.vstec_logo = cast(QLabel, self.window.findChild(QLabel, 'vstec_logo'))
@@ -23,14 +33,21 @@ class AdminView(View):
         self.jkuat_logo.setMaximumSize(50, 50)
         self.vstec_logo.setMaximumSize(70, 70)
         self.initUiValue()
-        self.addEventListener()
         self.window.show()
 
     def initUiValue(self):
         self.currUser.setText(f"{self.user.username.value}\nAdmin")
+        self.setCurrentState(StudentManager())
+        self.addEventListener()
 
-    def setCurrentAction(self, action: QWidget):
-        self.currentAction = action
+    def setCurrentState(self, state: BaseManager):
+        if self.currentState:
+            self.contentWidget.removeWidget(self.currentState.window)
+        self.currentState = state
+
+        self.contentWidget.addWidget(state.window)
+
 
     def addEventListener(self):
-        pass
+        self.manageStudents.clicked.connect(lambda: self.setCurrentState(StudentManager()))
+        self.manageStaff.clicked.connect(lambda: self.setCurrentState(StaffManager()))
