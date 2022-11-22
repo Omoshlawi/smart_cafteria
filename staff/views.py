@@ -14,7 +14,6 @@ class AdminView(View):
     def __init__(self, user):
         self.user = user
         super(AdminView, self).__init__(QMainWindow(), template("staffWindow.ui"))
-        cast(QMainWindow, self.window).centralWidget().setLayout(self.baseLayout)
         self.currentState = None
         self.contentWidget = cast(QVBoxLayout, self.window.findChild(QVBoxLayout, 'contentWidget'))
         self.manageStudents = cast(QCommandLinkButton, self.window.findChild(QCommandLinkButton, 'manageStudents'))
@@ -46,7 +45,6 @@ class AdminView(View):
         self.currentState = state
 
         self.contentWidget.addWidget(state.window)
-
 
     def addEventListener(self):
         self.manageStudents.clicked.connect(lambda: self.setCurrentState(StudentManager()))

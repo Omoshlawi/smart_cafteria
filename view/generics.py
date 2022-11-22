@@ -3,7 +3,7 @@ from typing import cast
 
 from PyQt6 import uic
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QWidget, QGridLayout
+from PyQt6.QtWidgets import QWidget, QGridLayout, QMainWindow
 
 from core.exceptions import TemplateDoesNotExistError
 from utils.utilities import static
@@ -16,8 +16,13 @@ class View:
         self.window = widget
         uic.loadUi(ui_file, self.window)
         self.baseLayout = cast(QGridLayout, self.window.findChild(QGridLayout, 'baseLayout'))
+        if isinstance(self.window, QMainWindow):
+            if self.baseLayout:
+                cast(QMainWindow, self.window).centralWidget().setLayout(self.baseLayout)
+        else:
+            if self.baseLayout:
+                self.window.setLayout(self.baseLayout)
         self.window.setWindowIcon(QIcon(static("vstec_yellow.png")))
-        self.window.setLayout(self.baseLayout)
 
-
-
+    # def getBaseLayout(self):
+    #     raise NotImplementedError()

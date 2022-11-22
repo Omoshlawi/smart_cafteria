@@ -15,7 +15,6 @@ class StudentsView(View):
         self.user = user
         self.student = self.getCurrentStudent(user)
         super(StudentsView, self).__init__(QMainWindow(), template('studentWindow.ui'))
-        cast(QMainWindow, self.window).centralWidget().setLayout(self.baseLayout)
         self.jkuat_logo = cast(QLabel, self.window.findChild(QLabel, 'jkuat_logo'))
         self.vstec_logo = cast(QLabel, self.window.findChild(QLabel, 'vstec_logo'))
         self.vstec_logo.setPixmap(QPixmap(static("vstec_green.png")))

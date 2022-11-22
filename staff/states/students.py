@@ -1,6 +1,8 @@
 from typing import cast
 
-from PyQt6.QtWidgets import QWidget, QPushButton, QInputDialog
+from PyQt6.QtWidgets import QWidget, QPushButton
+
+from components.dialog import InputDialogBox, InputDialogBoxPurpose
 from students.models import Student
 from utils.utilities import template
 from .base import BaseManager
@@ -13,15 +15,12 @@ class StudentManager(BaseManager):
         self.deleteStudent = cast(QPushButton, self.window.findChild(QPushButton, 'deleteStudent'))
         self.resetPassword = cast(QPushButton, self.window.findChild(QPushButton, 'resetPassword'))
         self.updateStudent = cast(QPushButton, self.window.findChild(QPushButton, 'updateStudent'))
-        self.addEventListerners()
+        self.addEventListeners()
 
-    def addEventListerners(self):
+    def addEventListeners(self):
         self.addStudent.clicked.connect(self.handleAddStudent)
 
     def handleAddStudent(self):
-        studs = Student()
-        fields = list(studs.get_filed_name())
-        fields.remove(studs.getPk())
+        dialog = InputDialogBox(parent=self.window, instance=Student(), purpose=InputDialogBoxPurpose.CREATE)
+        print(dialog.exec())
 
-        print(fields)
-        print("Adding")

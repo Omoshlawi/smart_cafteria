@@ -50,7 +50,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="resetPaasword">
+       <widget class="QPushButton" name="resetPassword">
         <property name="text">
          <string>Reset Password</string>
         </property>

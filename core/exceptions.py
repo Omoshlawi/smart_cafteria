@@ -16,3 +16,8 @@ class InvalidArgumentsError(Exception):
 class TemplateDoesNotExistError(Exception):
     def __init__(self, path: str):
         super(TemplateDoesNotExistError, self).__init__(f"Provided template {path} Doesn exits")
+
+
+class InvalidArgumentError(Exception):
+    def __init__(self, message="Invalid arguments Error"):
+        super(InvalidArgumentError, self).__init__(message)
