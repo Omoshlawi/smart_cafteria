@@ -14,4 +14,5 @@ class Student(Model):
     )
     registration_number = models.CharacterField(max_length=20, unique=True, index=True)
     year_of_study = models.PositiveIntegerField()
+    course = models.CharacterField(max_length=255, null=True)
 

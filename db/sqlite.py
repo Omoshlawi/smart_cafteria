@@ -258,11 +258,11 @@ class SqliteDb:
 
     def delete(self, model):
         sql = f"""
-        DELETE FROM {model._meta.table_name} WHERE id_=?
+        DELETE FROM {model._meta.table_name} WHERE {model.getPk()}=?
         """
         try:
             c = self._connection.cursor()
-            c.execute(sql, (model.id_.value,))
+            c.execute(sql, (getattr(model, model.getPk()).value,))
             self._connection.commit()
             c.close()
         except Error as e:

@@ -48,9 +48,9 @@ class LoginView(View):
             self.error.setText("")
             self.success.setText("Login success!")
             if user.is_admin.value:
-                self.next = StudentsView(user)
-            else:
                 self.next = AdminView(user)
+            else:
+                self.next = StudentsView(user)
             self.window.close()
 
         except ObjectDoesNotExistError as e:

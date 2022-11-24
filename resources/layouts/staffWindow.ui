@@ -36,37 +36,6 @@
      <property name="bottomMargin">
       <number>10</number>
      </property>
-     <item row="0" column="0">
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_4">
-         <item>
-          <widget class="QLabel" name="jkuat_logo">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QLabel" name="label">
-         <property name="styleSheet">
-          <string notr="true">font: 16pt &quot;Sylfaen&quot;;</string>
-         </property>
-         <property name="text">
-          <string>Admin Panel</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
      <item row="2" column="0" rowspan="2">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
@@ -130,6 +99,17 @@
        </item>
       </layout>
      </item>
+     <item row="1" column="2">
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="Line" name="line_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
      <item row="0" column="2">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
@@ -168,12 +148,32 @@
        </item>
       </layout>
      </item>
-     <item row="1" column="2">
-      <layout class="QVBoxLayout" name="verticalLayout_3">
+     <item row="0" column="0">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="Line" name="line_2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QLabel" name="jkuat_logo">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="styleSheet">
+          <string notr="true">font: 16pt &quot;Sylfaen&quot;;</string>
+         </property>
+         <property name="text">
+          <string>Admin Panel</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
          </property>
         </widget>
        </item>

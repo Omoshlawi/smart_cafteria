@@ -13,5 +13,9 @@ class StudentViewModel(QAbstractTableModel):
             status, text = self.students(index.row())
             return text
 
-    def rowCount(self, index):
+    def rowCount(self, parent: QModelIndex = ...) -> int:
         return len(self.students)
+
+    def columnCount(self, parent: QModelIndex = ...) -> int:
+        return 6
+

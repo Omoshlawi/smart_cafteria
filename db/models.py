@@ -208,13 +208,22 @@ class EmailField(CharacterField):
 
 
 class BooleanField(AbstractField):
-    def __init__(self, default=None, null=False, unique=False, index=False, primary_key=False):
-        super().__init__(default, null, unique, index, primary_key)
+    def __init__(self, default=None, null=False, unique=False, index=False):
+        super().__init__(default, null, unique, index, primary_key=False)
         self._type = "INT"
+
+    @property
+    def value(self):
+        if self._valid and self._value:
+            return 1
+        elif self._valid and not self._value:
+            return 0
+        else:
+            return None
 
     def getSqlType(self, field_name) -> str:
         return f"{field_name} {self._type} {'NULL' if self._null else 'NOT NULL'}" \
-               f" {'DEFAULT 1' if self._value and self._valid else 'DEFAULT 0'}"
+               f" {'DEFAULT 1' if self._valid else 'DEFAULT 0'}"
 
     def validate(self, value) -> bool:
         return isinstance(value, bool)
@@ -297,13 +306,14 @@ class Model(Manager):
         super().__init__()
         self._validate_kwargs(kwargs)
         self._meta = Model.Meta(self)
+        # update the class attrs with the provided ones
         for key, value in self.get_class_attrs():
             try:
+                print(f"Before update: {key}: {value.value}")
                 if isinstance(value, BooleanField):
-                    value.setValue(value.value == 1)
+                    value.setValue(kwargs[key] == 1)
                 else:
                     value.setValue(kwargs[key])
-                # print(key, value.__dict__)
             except KeyError:
                 pass
             except AttributeError as e:
@@ -429,3 +439,6 @@ class Model(Manager):
         db.close()
         # print(records)
         return map(lambda x: cls(**x), records)
+
+    def toJson(self):
+        return {field: getattr(self, field).value for field in self.get_filed_name()}
