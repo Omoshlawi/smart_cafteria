@@ -24,6 +24,7 @@ class StudentManager(BaseManager):
 
     def addEventListeners(self):
         self.addStudent.clicked.connect(self.handleAddStudent)
+        self.updateStudent.clicked.connect(self.handleUpdateStudent)
 
     def handleAddStudent(self):
         try:
@@ -34,24 +35,46 @@ class StudentManager(BaseManager):
         except Exception as e:
             print(e)
 
+    def handleUpdateStudent(self):
+        curr_item = self.treeView.currentItem()
+        # print(self.treeView.currentIndex().row())
+        # print(self.treeView.currentIndex().column())
+        if curr_item:
+            data = {}
+            id_ = int(curr_item.text(0))
+            user = User.get(user_id=id_)
+            stud = Student.get(user=id_)
+            data.update(user.toJson())
+            data.update(stud.toJson())
+            self.updateDialog = StudentRegistrationForm(self.window, data)
+            status = self.updateDialog.exec()
+            if status:
+                self.setUpStudentsList()
+
     def setUpStudentsList(self):
+        self.treeView.clear()
         students = Student.all()
         self.treeView.setColumnCount(5)
         self.treeView.setSortingEnabled(True)
         headers = [
-            'Registration Number', 'First Name',
-            'Last Name', 'Year of Study',
-            'Email'
+            'id',
+            'Registration Number',
+            'First Name',
+            'Last Name',
+            'Year of Study',
+            'Email',
+            'Course'
         ]
         self.treeView.setHeaderLabels(headers)
         for stud in students:
-            # print(stud.get_class_attrs())
             user = User.get(user_id=stud.user.value)
             values = [
+                str(user.user_id.value),
                 stud.registration_number.value,
                 user.first_name.value,
                 user.last_name.value,
                 str(stud.year_of_study.value),
-                user.email.value
+                user.email.value,
+                stud.course.value
             ]
             self.treeView.addTopLevelItems([QTreeWidgetItem(values)])

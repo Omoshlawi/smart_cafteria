@@ -10,13 +10,8 @@ from utils.utilities import template
 from view.generics import Dialog
 
 
-class InputDialogBoxPurpose(Enum):
-    CREATE = 0
-    UPDATE = 1
-
-
 class StudentRegistrationForm(Dialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, initial: dict = None):
         super().__init__(parent=parent, ui_file=template("studentsAddDialog.ui"))
         self.firstName = cast(QLineEdit, self.findChild(QLineEdit, 'firstName'))
         self.lastName = cast(QLineEdit, self.findChild(QLineEdit, 'lastName'))
@@ -27,8 +22,26 @@ class StudentRegistrationForm(Dialog):
         self.cancel = cast(QPushButton, self.findChild(QPushButton, 'cancel'))
         self.submit = cast(QPushButton, self.findChild(QPushButton, 'submit'))
         self.error = cast(QLabel, self.findChild(QLabel, 'error'))
+        self._update = False
+        if initial:
+            self._update = True
+            self._user_id = initial['user_id']
+            self.populate(data=initial)
+
         self.setModal(True)
         self.addEventListeners()
+
+    def populate(self, data: dict):
+        try:
+            self.firstName.setText(data['first_name'])
+            self.lastName.setText(data['last_name'])
+            self.email.setText(data['email'])
+            self.course.setText(data['course'])
+            self.regNo.setText(data['registration_number'])
+            self.yos.setText(str(data['year_of_study']))
+        except Exception as e:
+            # TODO handle data appropriately
+            print(e)
 
     def addEventListeners(self):
         self.cancel.clicked.connect(self.reject)
@@ -73,19 +86,37 @@ class StudentRegistrationForm(Dialog):
         cd = self.cleaned_data()
         if cd:
             try:
-                user = User.create(
-                    username=cd['regNo'],
-                    email=cd['email'],
-                    first_name=cd['firstName'],
-                    last_name=cd['lastName'],
-                    password=cd['regNo']
-                )
-                stud = Student.create(
-                    user=user.user_id.value,
-                    registration_number=cd['regNo'],
-                    year_of_study=cd['yos'],
-                    course=cd['course']
-                )
+                if self._update:
+                    user = User(
+                        user_id=self._user_id,
+                        username=cd['regNo'],
+                        email=cd['email'],
+                        first_name=cd['firstName'],
+                        last_name=cd['lastName'],
+                        password=cd['regNo']
+                    )
+                    user.save()
+                    stud = Student(
+                        user=user.user_id.value,
+                        registration_number=cd['regNo'],
+                        year_of_study=cd['yos'],
+                        course=cd['course']
+                    )
+                    stud.save()
+                else:
+                    user = User.create(
+                        username=cd['regNo'],
+                        email=cd['email'],
+                        first_name=cd['firstName'],
+                        last_name=cd['lastName'],
+                        password=cd['regNo']
+                    )
+                    stud = Student.create(
+                        user=user.user_id.value,
+                        registration_number=cd['regNo'],
+                        year_of_study=cd['yos'],
+                        course=cd['course']
+                    )
                 self.accept()
             except Exception as e:
                 self.error.setText(str(e))
