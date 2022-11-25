@@ -3,6 +3,7 @@ from typing import cast
 from PyQt6.QtWidgets import QWidget, QPushButton, QTreeWidget, QVBoxLayout, QTreeWidgetItem, QMessageBox
 
 from auth.models import User
+from components.creds_form import CredentialsForm
 from components.reg_form import StudentRegistrationForm
 from students.models import Student
 from utils.utilities import template
@@ -31,9 +32,10 @@ class StudentManager(BaseManager):
     def handleSetCredentials(self):
         curr_item = self.treeView.currentItem()
         if curr_item:
-            data = {}
             id_ = int(curr_item.text(0))
             user = User.get(user_id=id_)
+            self.credsDialog = CredentialsForm(user.toJson(), self.window)
+            self.credsDialog.exec()
 
     def handleDeleteStudent(self):
         curr_item = self.treeView.currentItem()

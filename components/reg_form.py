@@ -1,5 +1,4 @@
 import typing
-from enum import Enum
 from typing import cast
 
 from PyQt6.QtWidgets import QLineEdit, QPushButton, QLabel
