@@ -11,7 +11,6 @@ from .base import BaseManager
 
 class StudentManager(BaseManager):
     def __init__(self):
-        self._students = Student.all()
         super(StudentManager, self).__init__(QWidget(), template("studentsManager.ui"))
         self.addStudent = cast(QPushButton, self.window.findChild(QPushButton, 'addStudent'))
         self.deleteStudent = cast(QPushButton, self.window.findChild(QPushButton, 'deleteStudent'))
@@ -28,11 +27,15 @@ class StudentManager(BaseManager):
 
     def handleAddStudent(self):
         try:
-            self.dialog = StudentRegistrationForm()
+            self.dialog = StudentRegistrationForm(self.window)
+            status = self.dialog.exec()
+            if status:
+                self.setUpStudentsList()
         except Exception as e:
             print(e)
 
     def setUpStudentsList(self):
+        students = Student.all()
         self.treeView.setColumnCount(5)
         self.treeView.setSortingEnabled(True)
         headers = [
@@ -41,14 +44,14 @@ class StudentManager(BaseManager):
             'Email'
         ]
         self.treeView.setHeaderLabels(headers)
-        for stud in self._students:
-            student: Student = stud
+        for stud in students:
+            # print(stud.get_class_attrs())
             user = User.get(user_id=stud.user.value)
             values = [
-                student.registration_number.value,
+                stud.registration_number.value,
                 user.first_name.value,
                 user.last_name.value,
-                str(student.year_of_study.value),
+                str(stud.year_of_study.value),
                 user.email.value
             ]
             self.treeView.addTopLevelItems([QTreeWidgetItem(values)])

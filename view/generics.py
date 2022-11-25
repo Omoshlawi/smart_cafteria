@@ -36,7 +36,6 @@ class Dialog(QDialog):
             raise TemplateDoesNotExistError(ui_file)
         uic.loadUi(ui_file, self)
         self.baseLayout = cast(QFormLayout, self.findChild(QFormLayout, 'baseLayout'))
-        print(self.baseLayout)
         self.setLayout(self.baseLayout)
         self.setWindowIcon(QIcon(static("vstec_yellow.png")))
 

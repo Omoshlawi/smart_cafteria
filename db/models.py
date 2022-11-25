@@ -43,6 +43,10 @@ class BaseAbstractField:
     def default(self):
         return self.default
 
+    def reset(self):
+        self._valid = False
+        self._value = None
+
     @property
     def value(self):
         if self._valid:
@@ -221,9 +225,22 @@ class BooleanField(AbstractField):
         else:
             return None
 
+    def __str__(self):
+        if self._valid:
+            return str(self.value == 1)
+        else:
+            return str(None)
+
+    def setValue(self, value):
+        if isinstance(value, bool):
+            self._value = 1 if value else 0
+        else:
+            self._value = value
+        self._valid = self.validate(value)
+
     def getSqlType(self, field_name) -> str:
         return f"{field_name} {self._type} {'NULL' if self._null else 'NOT NULL'}" \
-               f" {'DEFAULT 1' if self._valid else 'DEFAULT 0'}"
+               f" {'DEFAULT 1' if self._valid and self.default is not None else 'DEFAULT 0'}"
 
     def validate(self, value) -> bool:
         return isinstance(value, bool)
@@ -237,7 +254,7 @@ class PasswordField(CharacterField):
 
     def setValue(self, value):
         self._value = hashlib.sha256(str(value).encode()).hexdigest()
-        self._valid = len(value) >= isinstance(value, str) and self._max_length
+        self._valid = isinstance(value, str) and len(value) <= self._max_length
 
 
 class TextField(AbstractField):
@@ -283,7 +300,6 @@ class DecimalField(AbstractField):
 
 
 class PositiveIntegerField(AbstractField):
-    # default=None, null=False, unique=False, index=False, primary_key=False
     def __init__(self, default=None, null=False, primary_key=False, auto_increment=False, index=False, unique=False):
         super().__init__(default=default, null=null, unique=unique, index=index, primary_key=primary_key)
         self._auto_increment = auto_increment
@@ -309,13 +325,13 @@ class Model(Manager):
         # update the class attrs with the provided ones
         for key, value in self.get_class_attrs():
             try:
-                print(f"Before update: {key}: {value.value}")
                 if isinstance(value, BooleanField):
                     value.setValue(kwargs[key] == 1)
                 else:
                     value.setValue(kwargs[key])
             except KeyError:
-                pass
+                # set the unprovided to default
+                value.setValue(getattr(value, "_default"))
             except AttributeError as e:
                 raise e
         # TODO CHECK SCHEMA

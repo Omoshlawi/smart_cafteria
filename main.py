@@ -1,6 +1,6 @@
 import os
 import sys
-
+from db.models import BooleanField
 from PyQt6.QtWidgets import QApplication
 from db.models import BooleanField
 from auth.models import User
@@ -11,21 +11,24 @@ from students.models import Student
 
 
 def run():
-    db = SqliteDb.getDatabase()
-    s = Student()
-    u = User()
-    db.dropTable(s)
-    db.dropTable(u)
-    db.close()
-    User.create(
-        username="admin",
-        password="admin",
-        email="admin@admin.com",
-        first_name="Admin",
-        last_name="Super",
-        is_staff=True,
-        is_admin=True
-    )
+    # u = User.get(user_id = 1)
+    # print(u)
+
+    # db = SqliteDb.getDatabase()
+    # s = Student()
+    # u = User()
+    # db.dropTable(s)
+    # db.dropTable(u)
+    # db.close()
+    # User.create(
+    #     username="admin",
+    #     password="admin",
+    #     email="admin@admin.com",
+    #     first_name="Admin",
+    #     last_name="Super",
+    #     is_staff=True,
+    #     is_admin=True
+    # )
     app = QApplication(sys.argv)
     app.setStyle('FUSION')
     with open(os.path.join(RESOURCES, 'qss', 'styles.qss'), 'rt') as f:

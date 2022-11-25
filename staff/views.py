@@ -43,7 +43,6 @@ class AdminView(View):
         if self.currentState:
             self.contentWidget.removeWidget(self.currentState.window)
         self.currentState = state
-
         self.contentWidget.addWidget(state.window)
 
     def addEventListener(self):

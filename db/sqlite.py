@@ -175,6 +175,9 @@ class SqliteDb:
             {", ".join(fields)}
         ) VALUES ( {'?, ' * (len(fields) - 1)}? );
         """
+        # print(sql)
+        # print(model.get_class_attrs())
+        # print(dict(zip(fields, values)))
         try:
             c = self._connection.cursor()
             c.execute(sql, values)

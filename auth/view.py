@@ -2,9 +2,10 @@ from typing import cast
 
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import QDialog, QLabel, QLineEdit, QCheckBox, QPushButton
-from settings import CASHIER_NUMBER
+
 from auth.models import User
 from core.exceptions import ObjectDoesNotExistError, MultipleObjectsError
+from settings import CASHIER_NUMBER
 from staff.views import AdminView
 from students.view import StudentsView
 from utils.utilities import static
@@ -43,8 +44,7 @@ class LoginView(View):
 
     def handleLogin(self):
         try:
-            user = User.get(username=self.userName.text())
-            password = self.password.text()
+            user = User.get(username=self.userName.text(), password=self.password.text())
             self.error.setText("")
             self.success.setText("Login success!")
             if user.is_admin.value:
@@ -52,10 +52,9 @@ class LoginView(View):
             else:
                 self.next = StudentsView(user)
             self.window.close()
-
-        except ObjectDoesNotExistError as e:
+        except ObjectDoesNotExistError:
             self.error.setText("Invalid username or password")
-        except MultipleObjectsError as e:
+        except MultipleObjectsError:
             self.error.setText("Invalid username or password")
         except Exception as e:
-            print(e)
+            print(f'{e=}')
