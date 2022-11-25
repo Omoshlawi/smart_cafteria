@@ -1,9 +1,9 @@
 from typing import cast
 
-from PyQt6.QtWidgets import QWidget, QPushButton, QTreeWidget, QVBoxLayout, QTreeWidgetItem
+from PyQt6.QtWidgets import QWidget, QPushButton, QTreeWidget, QVBoxLayout, QTreeWidgetItem, QMessageBox
 
 from auth.models import User
-from components.dialog import StudentRegistrationForm
+from components.reg_form import StudentRegistrationForm
 from students.models import Student
 from utils.utilities import template
 from .base import BaseManager
@@ -25,6 +25,35 @@ class StudentManager(BaseManager):
     def addEventListeners(self):
         self.addStudent.clicked.connect(self.handleAddStudent)
         self.updateStudent.clicked.connect(self.handleUpdateStudent)
+        self.deleteStudent.clicked.connect(self.handleDeleteStudent)
+        self.resetPassword.clicked.connect(self.handleSetCredentials)
+
+    def handleSetCredentials(self):
+        curr_item = self.treeView.currentItem()
+        if curr_item:
+            data = {}
+            id_ = int(curr_item.text(0))
+            user = User.get(user_id=id_)
+
+    def handleDeleteStudent(self):
+        curr_item = self.treeView.currentItem()
+        if curr_item:
+            data = {}
+            id_ = int(curr_item.text(0))
+            user = User.get(user_id=id_)
+            stud = Student.get(user=id_)
+            data.update(user.toJson())
+            data.update(stud.toJson())
+            dlg = QMessageBox(self.window)
+            dlg.setStandardButtons(QMessageBox.StandardButton.Apply | QMessageBox.StandardButton.Cancel)
+            dlg.setWindowTitle("Warning!!")
+            dlg.setText(f"Are you sure you want to delete '{user.get_full_name()}'\n"
+                        f"This operation will permanently delete the record")
+            status = dlg.exec()
+            if status == QMessageBox.StandardButton.Apply:
+                user.delete()
+                stud.delete()
+                self.setUpStudentsList()
 
     def handleAddStudent(self):
         try:
@@ -66,15 +95,20 @@ class StudentManager(BaseManager):
             'Course'
         ]
         self.treeView.setHeaderLabels(headers)
+
         for stud in students:
-            user = User.get(user_id=stud.user.value)
-            values = [
-                str(user.user_id.value),
-                stud.registration_number.value,
-                user.first_name.value,
-                user.last_name.value,
-                str(stud.year_of_study.value),
-                user.email.value,
-                stud.course.value
-            ]
-            self.treeView.addTopLevelItems([QTreeWidgetItem(values)])
+            try:
+                user = User.get(user_id=stud.user.value)
+                values = [
+                    str(user.user_id.value),
+                    stud.registration_number.value,
+                    user.first_name.value,
+                    user.last_name.value,
+                    str(stud.year_of_study.value),
+                    user.email.value,
+                    stud.course.value
+                ]
+                self.treeView.addTopLevelItems([QTreeWidgetItem(values)])
+            except Exception as e:
+                # todo display error in messagebox
+                print(e, "here")

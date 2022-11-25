@@ -256,6 +256,10 @@ class PasswordField(CharacterField):
         self._value = hashlib.sha256(str(value).encode()).hexdigest()
         self._valid = isinstance(value, str) and len(value) <= self._max_length
 
+    def setHash(self, hash_):
+        self._value = hash_
+        self._valid = isinstance(hash_, str) and len(hash_) == 64
+
 
 class TextField(AbstractField):
     def __init__(self, default=None, null=False):
@@ -327,6 +331,11 @@ class Model(Manager):
             try:
                 if isinstance(value, BooleanField):
                     value.setValue(kwargs[key] == 1)
+                elif isinstance(value, PasswordField):
+                    if len(str(kwargs[key])) == 64:
+                        value.setHash(kwargs[key])
+                    else:
+                        value.setValue(kwargs[key])
                 else:
                     value.setValue(kwargs[key])
             except KeyError:

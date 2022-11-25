@@ -1,19 +1,13 @@
 import os
 import sys
-from db.models import BooleanField
+
 from PyQt6.QtWidgets import QApplication
-from db.models import BooleanField
-from auth.models import User
+
 from auth.view import LoginView
-from db.sqlite import SqliteDb
 from settings import RESOURCES
-from students.models import Student
 
 
 def run():
-    # u = User.get(user_id = 1)
-    # print(u)
-
     # db = SqliteDb.getDatabase()
     # s = Student()
     # u = User()
