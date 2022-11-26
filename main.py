@@ -1,9 +1,11 @@
+import datetime
 import os
 import sys
 
 from PyQt6.QtWidgets import QApplication
 
 from auth.view import LoginView
+from db.models import DateField, DateTimeField
 from settings import RESOURCES
 
 

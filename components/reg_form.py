@@ -50,21 +50,25 @@ class StudentRegistrationForm(Dialog):
         data = {}
         if not self.firstName.text():
             self.error.setText("Please Enter first name")
+            self.firstName.setFocus()
             return {}
         else:
             data['firstName'] = self.firstName.text()
         if not self.lastName.text():
             self.error.setText("Please enter students last name")
+            self.lastName.setFocus()
             return {}
         else:
             data['lastName'] = self.lastName.text()
         if not self.email.text():
             self.error.setText("Please enter students email")
+            self.email.setFocus()
             return {}
         else:
             data['email'] = self.email.text()
         if not self.regNo.text():
             self.error.setText("Please enter students registration Number")
+            self.regNo.setFocus()
             return {}
         else:
             data['regNo'] = self.regNo.text()
@@ -73,9 +77,11 @@ class StudentRegistrationForm(Dialog):
             data['yos'] = d
         except ValueError:
             self.error.setText("Please enter valid year of study")
+            self.yos.setFocus()
             return {}
         if not self.course.text():
             self.error.setText("Please enter students course")
+            self.course.setFocus()
             return {}
         else:
             data['course'] = self.course.text()

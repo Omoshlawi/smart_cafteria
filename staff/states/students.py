@@ -113,4 +113,4 @@ class StudentManager(BaseManager):
                 self.treeView.addTopLevelItems([QTreeWidgetItem(values)])
             except Exception as e:
                 # todo display error in messagebox
-                print(e, "here")
+                print(self.__module__, e)

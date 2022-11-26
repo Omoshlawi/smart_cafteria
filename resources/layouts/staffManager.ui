@@ -25,25 +25,15 @@
    <layout class="QGridLayout" name="baseLayout">
     <item row="1" column="0">
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="4">
-       <widget class="QLabel" name="label_8">
+      <item row="1" column="5">
+       <widget class="QDateEdit" name="dateOfEmployment"/>
+      </item>
+      <item row="2" column="2">
+       <widget class="QPushButton" name="addStaff">
         <property name="text">
-         <string>Role:</string>
+         <string>Add</string>
         </property>
        </widget>
-      </item>
-      <item row="0" column="3">
-       <widget class="QLineEdit" name="email"/>
-      </item>
-      <item row="1" column="2">
-       <widget class="QLabel" name="label_7">
-        <property name="text">
-         <string>Staff Id</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="firstName"/>
       </item>
       <item row="1" column="4">
        <widget class="QLabel" name="label_9">
@@ -52,15 +42,8 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="3">
-       <widget class="QLineEdit" name="staffId"/>
-      </item>
-      <item row="0" column="2">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Email:</string>
-        </property>
-       </widget>
+      <item row="0" column="3">
+       <widget class="QLineEdit" name="email"/>
       </item>
       <item row="1" column="1">
        <widget class="QLineEdit" name="lastName"/>
@@ -75,10 +58,27 @@
       <item row="0" column="5">
        <widget class="QLineEdit" name="role"/>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label">
+      <item row="1" column="3">
+       <widget class="QLineEdit" name="staffId"/>
+      </item>
+      <item row="0" column="4">
+       <widget class="QLabel" name="label_8">
         <property name="text">
-         <string>First Name:</string>
+         <string>Role:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3">
+       <widget class="QPushButton" name="updateStaff">
+        <property name="text">
+         <string>Update</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>Staff Id</string>
         </property>
        </widget>
       </item>
@@ -96,22 +96,32 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="3">
-       <widget class="QPushButton" name="updateStaff">
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="firstName"/>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>Update</string>
+         <string>Email:</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="2">
-       <widget class="QPushButton" name="addStaff">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
         <property name="text">
-         <string>Add</string>
+         <string>First Name:</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="5">
-       <widget class="QDateEdit" name="dateOfEmployment"/>
+      <item row="3" column="1" colspan="4">
+       <widget class="QLabel" name="error">
+        <property name="styleSheet">
+         <string notr="true">color: rgb(170, 0, 0);</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>

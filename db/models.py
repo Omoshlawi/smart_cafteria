@@ -3,7 +3,7 @@ import hashlib
 import inspect
 import re as regex
 import typing
-from datetime import datetime
+from datetime import datetime, date
 
 from core.exceptions import ObjectDoesNotExistError, MultipleObjectsError, InvalidArgumentsError
 from .manager import Manager
@@ -130,6 +130,24 @@ class DateTimeField(AbstractField):
         d = f"'{self._default}'"
         return f"{field_name} {self._type} {'NULL' if self._null else 'NOT NULL'} " \
                f"{f'DEFAULT {d}' if self._default is not None else ''}"
+
+
+class DateField(DateTimeField):
+    def __init__(self, default=None, null=False, index=False):
+        super().__init__(default, null, index)
+        self._type = 'DATE'
+
+    def validate(self, value) -> bool:
+        if isinstance(value, date):
+            return True
+        elif isinstance(value, str):
+            try:
+                date.fromisoformat(value)
+                return True
+            except Exception as e:
+                return False
+        else:
+            return False
 
 
 class RelationShipField(BaseAbstractField):
