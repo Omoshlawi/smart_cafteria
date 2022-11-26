@@ -299,8 +299,8 @@ class TextField(AbstractField):
 class DecimalField(AbstractField):
     def __init__(self, max_digits, decimal_places, default=None, null=False, unique=False, index=False,
                  primary_key=False):
-        super().__init__(default, null, unique, index, primary_key)
         self._max_digits = max_digits
+        super().__init__(default, null, unique, index, primary_key)
         self._decimal_places = decimal_places
         self._type = f'DECIMAL ({max_digits}, {decimal_places})'
 

@@ -40,12 +40,9 @@ class StudentManager(BaseManager):
     def handleDeleteStudent(self):
         curr_item = self.treeView.currentItem()
         if curr_item:
-            data = {}
             id_ = int(curr_item.text(0))
             user = User.get(user_id=id_)
             stud = Student.get(user=id_)
-            data.update(user.toJson())
-            data.update(stud.toJson())
             dlg = QMessageBox(self.window)
             dlg.setStandardButtons(QMessageBox.StandardButton.Apply | QMessageBox.StandardButton.Cancel)
             dlg.setWindowTitle("Warning!!")

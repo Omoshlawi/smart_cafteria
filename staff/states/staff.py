@@ -1,8 +1,9 @@
 import typing
+from datetime import date
 from typing import cast
 
 from PyQt6.QtWidgets import QWidget, QLineEdit, QPushButton, QVBoxLayout, QTreeWidget, QTreeWidgetItem, QDateEdit, \
-    QLabel
+    QLabel, QMessageBox
 
 from auth.models import User
 from components.creds_form import CredentialsForm
@@ -14,11 +15,13 @@ from utils.utilities import template
 class StaffManager(BaseManager):
     def __init__(self):
         super(StaffManager, self).__init__(QWidget(), template("staffManager.ui"))
+        self._user_Id = -1
         self.firstName = cast(QLineEdit, self.window.findChild(QLineEdit, 'firstName'))
         self.lastName = cast(QLineEdit, self.window.findChild(QLineEdit, 'lastName'))
         self.email = cast(QLineEdit, self.window.findChild(QLineEdit, 'email'))
         self.staffId = cast(QLineEdit, self.window.findChild(QLineEdit, 'staffId'))
         self.role = cast(QLineEdit, self.window.findChild(QLineEdit, 'role'))
+        self.salary = cast(QLineEdit, self.window.findChild(QLineEdit, 'salary'))
         self.dateOfEmployment = cast(QDateEdit, self.window.findChild(QDateEdit, 'dateOfEmployment'))
         self.addStaff = cast(QPushButton, self.window.findChild(QPushButton, 'addStaff'))
         self.updateStaff = cast(QPushButton, self.window.findChild(QPushButton, 'updateStaff'))
@@ -34,6 +37,83 @@ class StaffManager(BaseManager):
     def addEventListeners(self):
         self.addStaff.clicked.connect(self.handleAddStaff)
         self.resetCredentials.clicked.connect(self.handleSetCredentials)
+        self.deleteStaff.clicked.connect(self.handleDeleteStaff)
+        self.updateStaff.clicked.connect(self.handleUpdateStaff)
+        self.treeView.itemDoubleClicked.connect(self.onDoubleClickItem)
+
+    def onDoubleClickItem(self, item):
+        id_ = int(item.text(0))
+        self._user_Id = id_
+        data = {}
+        user = User.get(user_id=id_)
+        data.update(user.toJson())
+        staff = Staff.get(user=id_)
+        data.update(staff.toJson())
+        self.populateData(data)
+
+    def populateData(self, data):
+        try:
+            self.firstName.setText(data['first_name'])
+            self.lastName.setText(data['last_name'])
+            self.email.setText(data['email'])
+            self.role.setText(data['role'])
+            self.staffId.setText(data['staff_id'])
+            self.dateOfEmployment.setDate(date.fromisoformat(data['date_of_employment']))
+            self.salary.setText(str(data['salary']))
+        except Exception as e:
+            # TODO handle data appropriately
+            print(e)
+
+    def clearInputs(self):
+        self.firstName.clear()
+        self.lastName.clear()
+        self.email.clear()
+        self.staffId.clear()
+        self.role.clear()
+        self.salary.clear()
+
+    def handleUpdateStaff(self):
+        cd = self.cleaned_data()
+        if cd:
+            try:
+                user = User.get(
+                    user_id=self._user_Id
+                )
+                user.username.setValue(cd['staffId']),
+                user.email.setValue(cd['email']),
+                user.first_name.setValue(cd['firstName']),
+                user.last_name.setValue(cd['lastName']),
+                user.save()
+                staff = Staff.get(
+                    user=self._user_Id
+                )
+                staff.staff_id.setValue(cd['staffId']),
+                staff.date_of_employment.setValue(cd['dateOfEmployment']),
+                staff.role.setValue(cd['role']),
+                staff.salary.setValue(cd['salary'])
+                staff.save()
+                self.setUpStaffList()
+                self.clearInputs()
+            except Exception as e:
+                # TODO THROW ERROR IN MESSAGEBOX
+                print(self.__module__, e)
+
+    def handleDeleteStaff(self):
+        curr_item = self.treeView.currentItem()
+        if curr_item:
+            id_ = int(curr_item.text(0))
+            user = User.get(user_id=id_)
+            staff = Staff.get(user=id_)
+            dlg = QMessageBox(self.window)
+            dlg.setStandardButtons(QMessageBox.StandardButton.Apply | QMessageBox.StandardButton.Cancel)
+            dlg.setWindowTitle("Warning!!")
+            dlg.setText(f"Are you sure you want to delete '{user.get_full_name()}'\n"
+                        f"This operation will permanently delete the record")
+            status = dlg.exec()
+            if status == QMessageBox.StandardButton.Apply:
+                user.delete()
+                staff.delete()
+                self.setUpStaffList()
 
     def handleSetCredentials(self):
         curr_item = self.treeView.currentItem()
@@ -45,7 +125,6 @@ class StaffManager(BaseManager):
 
     def handleAddStaff(self):
         cd = self.cleaned_data()
-        print(str(cd['dateOfEmployment']))
         if cd:
             try:
                 user = User.create(
@@ -60,9 +139,11 @@ class StaffManager(BaseManager):
                     user=user.user_id.value,
                     staff_id=cd['staffId'],
                     date_of_employment=cd['dateOfEmployment'],
-                    role=cd['role']
+                    role=cd['role'],
+                    salary=cd['salary']
                 )
                 self.setUpStaffList()
+                self.clearInputs()
             except Exception as e:
                 # TODO THROW ERROR IN MESSAGEBOX
                 print(self.__module__, e)
@@ -101,6 +182,13 @@ class StaffManager(BaseManager):
             return {}
         else:
             data['role'] = self.role.text()
+        try:
+            d = float(self.salary.text())
+            data['salary'] = d
+        except ValueError:
+            self.error.setText("Enter valid employee salary")
+            self.salary.setFocus()
+
         return data
 
     def setUpStaffList(self):
