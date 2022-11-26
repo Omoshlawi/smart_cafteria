@@ -3,6 +3,7 @@ from typing import cast
 from PyQt6.QtWidgets import QWidget, QLineEdit, QPushButton, QVBoxLayout, QTreeWidget, QTreeWidgetItem, QDateEdit
 
 from auth.models import User
+from components.creds_form import CredentialsForm
 from staff.models import Staff
 from staff.states.base import BaseManager
 from utils.utilities import template
@@ -29,6 +30,15 @@ class StaffManager(BaseManager):
 
     def addEventListeners(self):
         self.addStaff.clicked.connect(self.handleAddStaff)
+        self.resetCredentials.clicked.connect(self.handleSetCredentials)
+
+    def handleSetCredentials(self):
+        curr_item = self.treeView.currentItem()
+        if curr_item:
+            id_ = int(curr_item.text(0))
+            user = User.get(user_id=id_)
+            self.credsDialog = CredentialsForm(user.toJson(), self.window)
+            self.credsDialog.exec()
 
     def handleAddStaff(self):
         pass
