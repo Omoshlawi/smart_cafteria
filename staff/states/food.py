@@ -30,7 +30,27 @@ class FoodManager(BaseManager):
     def addEventListeners(self):
         self.addFood.clicked.connect(self.handleAddFood)
         self.treeView.itemDoubleClicked.connect(self.onItemDoubleClicked)
-        # self.updateFood.clicked.connect()
+        self.updateFood.clicked.connect(self.handleFoodUpdate)
+        self.deleteFood.clicked.connect(self.handleFoodDelete)
+
+    def handleFoodDelete(self):
+        pass
+
+    def handleFoodUpdate(self):
+        cd = self.cleaned_data()
+        if cd and self._food_id != -1:
+            try:
+                print(cd)
+                food = Food.get(food_id=self._food_id)
+                print(food.toJson())
+                food.food_name.setValue(cd['food'])
+                food.unit_price.setValue(float(cd['unitPrice']))
+                food.available.setValue(cd['available'])
+                food.save()
+                self.setUpFoodList()
+                self.clearInputs()
+            except Exception as e:
+                print(self.__module__, e)
 
     def onItemDoubleClicked(self, item):
         id_ = int(item.text(0))
