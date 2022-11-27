@@ -3,7 +3,7 @@ from decimal import Decimal, InvalidOperation
 from typing import cast
 
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTreeWidget, QLineEdit, QCheckBox, QPushButton, QLabel, \
-    QTreeWidgetItem
+    QTreeWidgetItem, QMessageBox
 
 from food.models import Food
 from staff.states.base import BaseManager
@@ -34,15 +34,26 @@ class FoodManager(BaseManager):
         self.deleteFood.clicked.connect(self.handleFoodDelete)
 
     def handleFoodDelete(self):
-        pass
+        curr_item = self.treeView.currentItem()
+        if curr_item:
+            id_ = int(curr_item.text(0))
+            food = Food.get(food_id=id_)
+            dlg = QMessageBox(self.window)
+            dlg.setStandardButtons(QMessageBox.StandardButton.Apply | QMessageBox.StandardButton.Cancel)
+            dlg.setWindowTitle("Warning!!")
+            dlg.setText(f"Are you sure you want to delete '{food.food_name.value}'\n"
+                        f"This operation will permanently delete the record")
+            status = dlg.exec()
+            if status == QMessageBox.StandardButton.Apply:
+                food.delete()
+                self.setUpFoodList()
+                self.clearInputs()
 
     def handleFoodUpdate(self):
         cd = self.cleaned_data()
         if cd and self._food_id != -1:
             try:
-                print(cd)
                 food = Food.get(food_id=self._food_id)
-                print(food.toJson())
                 food.food_name.setValue(cd['food'])
                 food.unit_price.setValue(float(cd['unitPrice']))
                 food.available.setValue(cd['available'])
@@ -50,6 +61,7 @@ class FoodManager(BaseManager):
                 self.setUpFoodList()
                 self.clearInputs()
             except Exception as e:
+                # todo display proper message box
                 print(self.__module__, e)
 
     def onItemDoubleClicked(self, item):
