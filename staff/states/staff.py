@@ -44,9 +44,8 @@ class StaffManager(BaseManager):
     def onDoubleClickItem(self, item):
         id_ = int(item.text(0))
         self._user_Id = id_
-        data = {}
         user = User.get(user_id=id_)
-        data.update(user.toJson())
+        data = user.toJson()
         staff = Staff.get(user=id_)
         data.update(staff.toJson())
         self.populateData(data)
@@ -65,6 +64,7 @@ class StaffManager(BaseManager):
             print(e)
 
     def clearInputs(self):
+        self._user_Id = -1
         self.firstName.clear()
         self.lastName.clear()
         self.email.clear()
@@ -74,7 +74,7 @@ class StaffManager(BaseManager):
 
     def handleUpdateStaff(self):
         cd = self.cleaned_data()
-        if cd:
+        if cd and self._user_Id != -1:
             try:
                 user = User.get(
                     user_id=self._user_Id

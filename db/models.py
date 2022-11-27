@@ -4,7 +4,7 @@ import inspect
 import re as regex
 import typing
 from datetime import datetime, date
-
+from decimal import Decimal
 from core.exceptions import ObjectDoesNotExistError, MultipleObjectsError, InvalidArgumentsError
 from .manager import Manager
 from .sqlite import SqliteDb
@@ -41,7 +41,7 @@ class BaseAbstractField:
 
     @property
     def default(self):
-        return self.default
+        return self._default
 
     def reset(self):
         self._valid = False
@@ -313,7 +313,7 @@ class DecimalField(AbstractField):
         return self._decimal_places
 
     def validate(self, value) -> bool:
-        return (isinstance(value, int) or isinstance(value, float)) and len(str(value)) <= self._max_digits
+        return (isinstance(value, int) or isinstance(value, float) or isinstance(value, Decimal)) and len(str(value)) <= self._max_digits
 
     def getSqlType(self, field_name) -> str:
         return f"{field_name} {self._type} {f'DEFAULT {self._default}' if self._default is not None else ''}" \

@@ -55,16 +55,16 @@
           </widget>
          </item>
          <item>
-          <widget class="QCommandLinkButton" name="manageSales">
+          <widget class="QCommandLinkButton" name="manageFood">
            <property name="text">
-            <string>Sales / Purchase</string>
+            <string>Food</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCommandLinkButton" name="manageFood">
+          <widget class="QCommandLinkButton" name="manageSales">
            <property name="text">
-            <string>Food</string>
+            <string>Sales / Purchase</string>
            </property>
           </widget>
          </item>

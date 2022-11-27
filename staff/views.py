@@ -4,6 +4,7 @@ from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import QMainWindow, QLabel, QVBoxLayout, QCommandLinkButton
 
 from staff.states.base import BaseManager
+from staff.states.food import FoodManager
 from staff.states.staff import StaffManager
 from staff.states.students import StudentManager
 from utils.utilities import template, static
@@ -48,3 +49,4 @@ class AdminView(View):
     def addEventListener(self):
         self.manageStudents.clicked.connect(lambda: self.setCurrentState(StudentManager()))
         self.manageStaff.clicked.connect(lambda: self.setCurrentState(StaffManager()))
+        self.manageFood.clicked.connect(lambda: self.setCurrentState(FoodManager()))
