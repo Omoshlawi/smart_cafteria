@@ -3,7 +3,8 @@ from typing import cast
 
 from PyQt6 import QtCore
 from PyQt6.QtGui import QPixmap
-from PyQt6.QtWidgets import QMainWindow, QLabel, QLineEdit, QDateEdit, QGroupBox, QVBoxLayout, QGridLayout, QLCDNumber
+from PyQt6.QtWidgets import QMainWindow, QLabel, QLineEdit, QDateEdit, QGroupBox, QVBoxLayout, QGridLayout, QLCDNumber, \
+    QHBoxLayout
 
 from components.menu_item import MenuItem
 from food.models import Food
@@ -40,7 +41,7 @@ class StudentsView(View):
         self.email = cast(QLineEdit, self.window.findChild(QLineEdit, 'email'))
         self.name = cast(QLineEdit, self.window.findChild(QLineEdit, 'name'))
         self.mealtype = cast(QLabel, self.window.findChild(QLabel, 'mealtype'))
-        self.total = QLineEdit("0")
+        self.totalCost = cast(QLineEdit, self.window.findChild(QLineEdit, 'totalCost'))
         self.initUiValues()
         self.setTimer()
         self.initFoodMenu()
@@ -69,7 +70,7 @@ class StudentsView(View):
         for food in foods:
             menu_item = MenuItem(
                 food,
-                lambda: self.total.setText(str(sum(float(item.totalCost.text()) for item in self._menuItems)))
+                lambda: self.totalCost.setText(str(sum(float(item.totalCost.text()) for item in self._menuItems)))
             )
             self.foodMenu.addWidget(menu_item.meal, row, 0)
             self.foodMenu.addWidget(menu_item.price, row, 1)
@@ -77,9 +78,6 @@ class StudentsView(View):
             self.foodMenu.addWidget(menu_item.totalCost, row, 3)
             self._menuItems.append(menu_item)
             row += 1
-        self.foodMenu.addWidget(QLabel("Total: "), row, 2)
-        self.foodMenu.addWidget(
-            self.total, row + 1, 3)
 
     def initUiValues(self):
         if self.student:
