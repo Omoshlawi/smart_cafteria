@@ -5,6 +5,7 @@ import re as regex
 import typing
 from datetime import datetime, date
 from decimal import Decimal
+
 from core.exceptions import ObjectDoesNotExistError, MultipleObjectsError, InvalidArgumentsError
 from .manager import Manager
 from .sqlite import SqliteDb
@@ -150,7 +151,7 @@ class DateField(DateTimeField):
         if isinstance(value, datetime):
             self._value = str(value.date())
         else:
-            self._value = str(value )
+            self._value = str(value)
 
     def validate(self, value) -> bool:
         if isinstance(value, date):
@@ -337,7 +338,8 @@ class DecimalField(AbstractField):
         return self._decimal_places
 
     def validate(self, value) -> bool:
-        return (isinstance(value, int) or isinstance(value, float) or isinstance(value, Decimal)) and len(str(value)) <= self._max_digits
+        return (isinstance(value, int) or isinstance(value, float) or isinstance(value, Decimal)) and len(
+            str(value)) <= self._max_digits
 
     def getSqlType(self, field_name) -> str:
         return f"{field_name} {self._type} {f'DEFAULT {self._default}' if self._default is not None else ''}" \
@@ -349,7 +351,7 @@ class PositiveIntegerField(AbstractField):
     def __init__(self, default=None, null=False, primary_key=False, auto_increment=False, index=False, unique=False):
         super().__init__(default=default, null=null, unique=unique, index=index, primary_key=primary_key)
         self._auto_increment = auto_increment
-        self._type = 'INTEGER UNSIGNED'
+        self._type = 'INTEGER'
 
     def validate(self, value) -> bool:
         return isinstance(value, int) and value >= 0
@@ -498,7 +500,9 @@ class Model(Manager):
         db = SqliteDb.getDatabase()
         records = db.getRecords(cls())
         db.close()
-        return map(lambda x: cls(**x), records)
+        for rec in records:
+            yield cls(**rec)
+        # return map(lambda x: cls(**x), records)
 
     @classmethod
     def filter(cls, **kwargs):

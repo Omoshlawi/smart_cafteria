@@ -28,6 +28,7 @@ class StudentManager(BaseManager):
         self.updateStudent.clicked.connect(self.handleUpdateStudent)
         self.deleteStudent.clicked.connect(self.handleDeleteStudent)
         self.resetPassword.clicked.connect(self.handleSetCredentials)
+        self.treeView.itemDoubleClicked.connect(self.handleUpdateStudent)
 
     def handleSetCredentials(self):
         curr_item = self.treeView.currentItem()
@@ -41,8 +42,8 @@ class StudentManager(BaseManager):
         curr_item = self.treeView.currentItem()
         if curr_item:
             id_ = int(curr_item.text(0))
-            user = User.get(user_id=id_)
-            stud = Student.get(user=id_)
+            stud = Student.get(id=id_)
+            user = User.get(user_id=stud.user.value)
             dlg = QMessageBox(self.window)
             dlg.setStandardButtons(QMessageBox.StandardButton.Apply | QMessageBox.StandardButton.Cancel)
             dlg.setWindowTitle("Warning!!")
@@ -63,15 +64,15 @@ class StudentManager(BaseManager):
         except Exception as e:
             print(e)
 
-    def handleUpdateStudent(self):
-        curr_item = self.treeView.currentItem()
+    def handleUpdateStudent(self, currentItem=None):
+        curr_item = currentItem or self.treeView.currentItem()
         # print(self.treeView.currentIndex().row())
         # print(self.treeView.currentIndex().column())
         if curr_item:
             data = {}
             id_ = int(curr_item.text(0))
-            user = User.get(user_id=id_)
-            stud = Student.get(user=id_)
+            stud = Student.get(id=id_)
+            user = User.get(user_id=stud.user.value)
             data.update(user.toJson())
             data.update(stud.toJson())
             self.updateDialog = StudentRegistrationForm(self.window, data)
@@ -86,6 +87,7 @@ class StudentManager(BaseManager):
         self.treeView.setSortingEnabled(True)
         headers = [
             'id',
+            'User',
             'Registration Number',
             'First Name',
             'Last Name',
@@ -99,7 +101,8 @@ class StudentManager(BaseManager):
             try:
                 user = User.get(user_id=stud.user.value)
                 values = [
-                    str(user.user_id.value),
+                    str(stud.id.value),
+                    str(user),
                     stud.registration_number.value,
                     user.first_name.value,
                     user.last_name.value,

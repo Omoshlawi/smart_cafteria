@@ -19,7 +19,7 @@
      <x>10</x>
      <y>10</y>
      <width>381</width>
-     <height>258</height>
+     <height>282</height>
     </rect>
    </property>
    <layout class="QFormLayout" name="baseLayout">
@@ -35,85 +35,71 @@
     <property name="bottomMargin">
      <number>20</number>
     </property>
-    <item row="0" column="0">
+    <item row="1" column="0">
      <widget class="QLabel" name="label_3">
       <property name="text">
        <string>First name:</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="1">
+    <item row="1" column="1">
      <widget class="QLineEdit" name="firstName"/>
     </item>
-    <item row="1" column="0">
+    <item row="2" column="0">
      <widget class="QLabel" name="label_4">
       <property name="text">
        <string>Last Name:</string>
       </property>
      </widget>
     </item>
-    <item row="1" column="1">
+    <item row="2" column="1">
      <widget class="QLineEdit" name="lastName"/>
     </item>
-    <item row="2" column="0">
+    <item row="3" column="0">
      <widget class="QLabel" name="label_5">
       <property name="text">
        <string>Email:</string>
       </property>
      </widget>
     </item>
-    <item row="2" column="1">
+    <item row="3" column="1">
      <widget class="QLineEdit" name="email"/>
     </item>
-    <item row="3" column="0">
+    <item row="4" column="0">
      <widget class="QLabel" name="label">
       <property name="text">
        <string>Registration No:</string>
       </property>
      </widget>
     </item>
-    <item row="3" column="1">
+    <item row="4" column="1">
      <widget class="QLineEdit" name="regNo"/>
     </item>
-    <item row="4" column="0">
+    <item row="5" column="0">
      <widget class="QLabel" name="label_2">
       <property name="text">
        <string>Year of Study:</string>
       </property>
      </widget>
     </item>
-    <item row="4" column="1">
+    <item row="5" column="1">
      <widget class="QLineEdit" name="yos"/>
     </item>
-    <item row="5" column="0">
+    <item row="6" column="0">
      <widget class="QLabel" name="label_6">
       <property name="text">
        <string>Course:</string>
       </property>
      </widget>
     </item>
-    <item row="5" column="1">
+    <item row="6" column="1">
      <widget class="QLineEdit" name="course">
       <property name="styleSheet">
        <string notr="true"/>
       </property>
      </widget>
     </item>
-    <item row="7" column="0">
-     <widget class="QPushButton" name="cancel">
-      <property name="text">
-       <string>Cancel</string>
-      </property>
-     </widget>
-    </item>
     <item row="7" column="1">
-     <widget class="QPushButton" name="submit">
-      <property name="text">
-       <string>Submitt</string>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="1">
      <widget class="QLabel" name="error">
       <property name="styleSheet">
        <string notr="true">color: rgb(170, 0, 0);
@@ -121,6 +107,34 @@ font: 700 12pt &quot;System&quot;;</string>
       </property>
       <property name="text">
        <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="0">
+     <widget class="QPushButton" name="cancel">
+      <property name="text">
+       <string>Cancel</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="1">
+     <widget class="QPushButton" name="submit">
+      <property name="text">
+       <string>Submitt</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QComboBox" name="comboUser">
+      <property name="editable">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_7">
+      <property name="text">
+       <string>User:</string>
       </property>
      </widget>
     </item>

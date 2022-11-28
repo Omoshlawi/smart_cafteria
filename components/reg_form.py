@@ -1,7 +1,7 @@
 import typing
 from typing import cast
 
-from PyQt6.QtWidgets import QLineEdit, QPushButton, QLabel
+from PyQt6.QtWidgets import QLineEdit, QPushButton, QLabel, QComboBox
 
 from auth.models import User
 from students.models import Student
@@ -12,6 +12,10 @@ from view.generics import Dialog
 class StudentRegistrationForm(Dialog):
     def __init__(self, parent=None, initial: dict = None):
         super().__init__(parent=parent, ui_file=template("studentsAddDialog.ui"))
+        self._update = False
+        if initial:
+            self._update = True
+            self._student_id = initial['id']
         self.firstName = cast(QLineEdit, self.findChild(QLineEdit, 'firstName'))
         self.lastName = cast(QLineEdit, self.findChild(QLineEdit, 'lastName'))
         self.email = cast(QLineEdit, self.findChild(QLineEdit, 'email'))
@@ -21,17 +25,25 @@ class StudentRegistrationForm(Dialog):
         self.cancel = cast(QPushButton, self.findChild(QPushButton, 'cancel'))
         self.submit = cast(QPushButton, self.findChild(QPushButton, 'submit'))
         self.error = cast(QLabel, self.findChild(QLabel, 'error'))
-        self._update = False
-        if initial:
-            self._update = True
-            self._user_id = initial['user_id']
+        self.comboUser = cast(QComboBox, self.findChild(QComboBox, 'comboUser'))
+        if self._update:
+            self._users = {user.user_id.value: user.username.value for user in User.all()}
+            self.fillComboBox()
             self.populate(data=initial)
 
         self.setModal(True)
         self.addEventListeners()
 
+    def fillComboBox(self):
+        # if self._update:
+        self.comboUser.addItems(self._users.values())
+        self.comboUser.setCurrentIndex(0)
+        if not self._update:
+            self.baseLayout.removeRow(0)
+
     def populate(self, data: dict):
         try:
+            self.comboUser.setCurrentText(data["username"])
             self.firstName.setText(data['first_name'])
             self.lastName.setText(data['last_name'])
             self.email.setText(data['email'])
@@ -48,6 +60,15 @@ class StudentRegistrationForm(Dialog):
 
     def cleaned_data(self) -> typing.Dict:
         data = {}
+        if self._update:
+            try:
+                index = tuple(self._users.values()).index(self.comboUser.currentText())
+                data['user'] = tuple(self._users.keys())[index]
+            except Exception as e:
+                print(e)
+                self.error.setText("Invalid User!!")
+                return {}
+
         if not self.firstName.text():
             self.error.setText("Please Enter first name")
             self.firstName.setFocus()
@@ -92,8 +113,16 @@ class StudentRegistrationForm(Dialog):
         if cd:
             try:
                 if self._update:
+                    stud = Student.get(
+                        id=self._student_id
+                    )
+                    stud.user.setValue(cd['user'])
+                    stud.registration_number.setValue(cd['regNo']),
+                    stud.year_of_study.setValue(cd['yos']),
+                    stud.course.setValue(cd['course'])
+                    stud.save()
                     user = User(
-                        user_id=self._user_id,
+                        user_id=stud.user.value,
                         username=cd['regNo'],
                         email=cd['email'],
                         first_name=cd['firstName'],
@@ -101,13 +130,7 @@ class StudentRegistrationForm(Dialog):
                         password=cd['regNo']
                     )
                     user.save()
-                    stud = Student(
-                        user=user.user_id.value,
-                        registration_number=cd['regNo'],
-                        year_of_study=cd['yos'],
-                        course=cd['course']
-                    )
-                    stud.save()
+
                 else:
                     user = User.create(
                         username=cd['regNo'],
