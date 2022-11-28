@@ -433,7 +433,7 @@ font-weight :bold;</string>
             </layout>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton">
+            <widget class="QPushButton" name="orderNow">
              <property name="styleSheet">
               <string notr="true">font: 16pt &quot;PMingLiU-ExtB&quot;;
 font-weight:bold;

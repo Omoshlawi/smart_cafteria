@@ -5,11 +5,15 @@ import sys
 from PyQt6.QtWidgets import QApplication
 
 from auth.view import LoginView
-from db.models import DateField, DateTimeField
+from db.models import DateField, ForeignKeyField, DateTimeField, PositiveIntegerField, BooleanField, OneToOneField, OnRelationShipModified
 from settings import RESOURCES
+from students.models import Student
 
 
 def run():
+    f = DateField(default=datetime.datetime.now())
+    print(f"{f.getSqlType('name')=}")
+    print(f"{f=}")
     # db = SqliteDb.getDatabase()
     # s = Student()
     # u = User()

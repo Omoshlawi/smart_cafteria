@@ -7,6 +7,7 @@ from db.models import Model
 
 
 class Student(Model):
+    id = models.PositiveIntegerField(primary_key=True, auto_increment=True)
     user = models.OneToOneField(
         User,
         on_delete=models.OnRelationShipModified.DELETE_CASCADE,

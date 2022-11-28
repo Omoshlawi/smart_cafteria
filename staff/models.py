@@ -3,6 +3,7 @@ from db import models
 
 
 class Staff(models.Model):
+    id = models.PositiveIntegerField(primary_key=True, auto_increment=True)
     user = models.OneToOneField(User, on_delete=models.OnRelationShipModified.DELETE_CASCADE)
     staff_id = models.CharacterField(max_length=25, unique=True)
     role = models.TextField()

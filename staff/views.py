@@ -33,7 +33,7 @@ class AdminView(View):
         self.jkuat_logo.setMaximumSize(50, 50)
         self.vstec_logo.setMaximumSize(70, 70)
         self.initUiValue()
-        self.window.show()
+        self.window.showMaximized()
 
     def initUiValue(self):
         self.currUser.setText(f"{self.user.username.value}\nAdmin")

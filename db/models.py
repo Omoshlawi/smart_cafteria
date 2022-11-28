@@ -22,6 +22,7 @@ class BaseAbstractField:
         self._null = False
         self._index = False
         self._fk = False
+        self._unique = False
 
     @property
     def valid(self) -> bool:
@@ -106,9 +107,11 @@ class AbstractField(BaseAbstractField):
 
 
 class DateTimeField(AbstractField):
-    def __init__(self, default=None, null=False, index=False):
+    def __init__(self, default=None, null=False, index=False, auto_now=False, auto_now_add=False):
         super().__init__(default=default, null=null, unique=False, index=index, primary_key=False)
         self._type = 'DATETIME'
+        self._auto_now = auto_now
+        self._auto_now_add = auto_now_add
 
     def setValue(self, value):
         self._valid = self.validate(value)
@@ -129,13 +132,25 @@ class DateTimeField(AbstractField):
     def getSqlType(self, field_name) -> str:
         d = f"'{self._default}'"
         return f"{field_name} {self._type} {'NULL' if self._null else 'NOT NULL'} " \
-               f"{f'DEFAULT {d}' if self._default is not None else ''}"
+               f"{f'DEFAULT {d}' if self._default is not None and not self._auto_now_add and not self._auto_now else ''}" \
+               f" {'DEFAULT CURRENT_TIMESTAMP' if self._auto_now_add else ''}"
 
 
 class DateField(DateTimeField):
     def __init__(self, default=None, null=False, index=False):
-        super().__init__(default, null, index)
+        if isinstance(default, datetime):
+            d = default.date()
+            super().__init__(d, null, index)
+        else:
+            super().__init__(default, null, index)
         self._type = 'DATE'
+
+    def setValue(self, value):
+        self._valid = self.validate(value)
+        if isinstance(value, datetime):
+            self._value = str(value.date())
+        else:
+            self._value = str(value )
 
     def validate(self, value) -> bool:
         if isinstance(value, date):
@@ -148,6 +163,12 @@ class DateField(DateTimeField):
                 return False
         else:
             return False
+
+    def getSqlType(self, field_name) -> str:
+        d = f"'{self._default}'"
+        return f"{field_name} {self._type} {'NULL' if self._null else 'NOT NULL'} " \
+               f"{f'DEFAULT {d}' if self._default is not None and not self._auto_now_add and not self._auto_now else ''}" \
+               f" {'DEFAULT CURRENT_DATE' if self._auto_now_add else ''}"
 
 
 class RelationShipField(BaseAbstractField):
@@ -173,14 +194,16 @@ class RelationShipField(BaseAbstractField):
             ''
 
     def getSqlType(self, field_name) -> str:
-        return f"{field_name} {self._type} {'PRIMARY KEY' if self.pk else ''}"
+        return f"{field_name} {self._type} {'PRIMARY KEY' if self.pk else ''} " \
+               f"{'UNIQUE' if self._unique else ''}"
 
 
 class OneToOneField(RelationShipField):
     def __init__(self, cls, on_delete: OnRelationShipModified, related_name: str = None):
         super().__init__(cls, on_delete, related_name)
-        self._pk = True
+        self._pk = False
         self._fk = True
+        self._unique = True
 
 
 class ForeignKeyField(RelationShipField):
@@ -232,7 +255,7 @@ class EmailField(CharacterField):
 class BooleanField(AbstractField):
     def __init__(self, default=None, null=False, unique=False, index=False):
         super().__init__(default, null, unique, index, primary_key=False)
-        self._type = "INT"
+        self._type = "BOOL"
 
     @property
     def value(self):
@@ -258,7 +281,8 @@ class BooleanField(AbstractField):
 
     def getSqlType(self, field_name) -> str:
         return f"{field_name} {self._type} {'NULL' if self._null else 'NOT NULL'}" \
-               f" {'DEFAULT 1' if self._valid and self.default is not None else 'DEFAULT 0'}"
+               f" {'DEFAULT 1' if self._valid and self.default == True else ''}" \
+               f"{'DEFAULT 0' if self._valid and self.default == False else ''}"
 
     def validate(self, value) -> bool:
         return isinstance(value, bool)
@@ -325,12 +349,13 @@ class PositiveIntegerField(AbstractField):
     def __init__(self, default=None, null=False, primary_key=False, auto_increment=False, index=False, unique=False):
         super().__init__(default=default, null=null, unique=unique, index=index, primary_key=primary_key)
         self._auto_increment = auto_increment
+        self._type = 'INTEGER UNSIGNED'
 
     def validate(self, value) -> bool:
         return isinstance(value, int) and value >= 0
 
     def getSqlType(self, field_name) -> str:
-        return f"{field_name} INTEGER {'NULL' if self._null and not self._pk else 'NOT NULL'}" \
+        return f"{field_name} {self._type} CHECK(\"{field_name}\">=0) {'NULL' if self._null and not self._pk else 'NOT NULL'}" \
                f"{' PRIMARY KEY ' if self._pk else ' '}" \
                f"{'AUTOINCREMENT' if self._auto_increment and self._pk else ''}" \
                f" {'UNIQUE' if self._unique and not self._pk and not self._null else ''}"

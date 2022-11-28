@@ -4,7 +4,7 @@ from typing import cast
 from PyQt6 import QtCore
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import QMainWindow, QLabel, QLineEdit, QDateEdit, QGroupBox, QVBoxLayout, QGridLayout, QLCDNumber, \
-    QHBoxLayout
+    QMessageBox, QPushButton
 
 from components.menu_item import MenuItem
 from food.models import Food
@@ -26,6 +26,7 @@ class StudentsView(View):
         self.groupBoxProfile = cast(QGroupBox, self.window.findChild(QGroupBox, 'groupBoxProfile'))
         self.foodMenu = cast(QGridLayout, self.window.findChild(QGridLayout, 'foodMenu'))
         self.time = cast(QLCDNumber, self.window.findChild(QLCDNumber, 'time'))
+        self.orderNow = cast(QPushButton, self.window.findChild(QPushButton, 'orderNow'))
         self.groupBoxProfile.setLayout(self.profileLayout)
         self.vstec_logo.setPixmap(QPixmap(static("vstec_green.png")))
         self.jkuat_logo.setPixmap(QPixmap(static("jkuat-logo.webp")))
@@ -34,6 +35,7 @@ class StudentsView(View):
         self.jkuat_logo.setMaximumSize(70, 70)
         self.vstec_logo.setMaximumSize(70, 70)
         self.cashierno = cast(QLineEdit, self.window.findChild(QLineEdit, 'cashierno'))
+        self.accountBalance = cast(QLineEdit, self.window.findChild(QLineEdit, 'accountBalance'))
         self.cashierno.setText(str(CASHIER_NUMBER))
         self.date = cast(QDateEdit, self.window.findChild(QDateEdit, 'date'))
         self.date.setDate(datetime.now().date())
@@ -45,7 +47,8 @@ class StudentsView(View):
         self.initUiValues()
         self.setTimer()
         self.initFoodMenu()
-        self.window.show()
+        self.addEventHandler()
+        self.window.showMaximized()
 
     def setTimer(self):
         timer = QtCore.QTimer(self.window)
@@ -78,6 +81,22 @@ class StudentsView(View):
             self.foodMenu.addWidget(menu_item.totalCost, row, 3)
             self._menuItems.append(menu_item)
             row += 1
+
+    def addEventHandler(self):
+        self.orderNow.clicked.connect(self.handleOrderAdd)
+
+    def handleOrderAdd(self):
+        amount = float(self.totalCost.text().strip())
+        if amount > 0:
+            dialog = QMessageBox(self.window)
+            dialog.setModal(True)
+            dialog.setWindowTitle("Confirmation")
+            dialog.setText(f"The operation will deduct Ksh. {amount} "
+                           f"from your account\nAre you sure you wanna proceed")
+            dialog.setStandardButtons(QMessageBox.StandardButton.No | QMessageBox.StandardButton.Yes)
+            status = dialog.exec()
+            if status == QMessageBox.StandardButton.Yes:
+                print(self.accountBalance.text())
 
     def initUiValues(self):
         if self.student:
