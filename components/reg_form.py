@@ -40,8 +40,6 @@ class StudentRegistrationForm(Dialog):
         # if self._update:
         self.comboUser.addItems(self._users.values())
         self.comboUser.setCurrentIndex(0)
-        print(self._update)
-
 
     def populate(self, data: dict):
         try:
@@ -67,7 +65,6 @@ class StudentRegistrationForm(Dialog):
                 index = tuple(self._users.values()).index(self.comboUser.currentText())
                 data['user'] = tuple(self._users.keys())[index]
             except Exception as e:
-                print(e)
                 self.error.setText("Invalid User!!")
                 return {}
 

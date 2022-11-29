@@ -10,9 +10,9 @@ from staff.states.base import BaseManager
 from utils.utilities import template
 
 
-class FoodManager(BaseManager):
+class FoodAdmin(BaseManager):
     def __init__(self):
-        super(FoodManager, self).__init__(QWidget(), template("foodsManager.ui"))
+        super(FoodAdmin, self).__init__(QWidget(), template("foodsManager.ui"))
         self.food = cast(QLineEdit, self.window.findChild(QLineEdit, 'food'))
         self.unitPrice = cast(QLineEdit, self.window.findChild(QLineEdit, 'unitPrice'))
         self.available = cast(QCheckBox, self.window.findChild(QCheckBox, 'available'))

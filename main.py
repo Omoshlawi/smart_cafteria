@@ -7,6 +7,7 @@ from PyQt6.QtWidgets import QApplication
 from auth.models import User
 from auth.view import LoginView
 from db.models import DateField, ForeignKeyField, DateTimeField, PositiveIntegerField, BooleanField, OneToOneField, OnRelationShipModified
+from orders.models import Orders
 from settings import RESOURCES
 from students.models import Student
 
