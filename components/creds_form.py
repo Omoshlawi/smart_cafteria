@@ -5,10 +5,10 @@ from PyQt6.QtWidgets import QLineEdit, QPushButton, QLabel
 
 from auth.models import User
 from utils.utilities import template
-from view.generics import Dialog
+from view.generics import Form
 
 
-class CredentialsForm(Dialog):
+class CredentialsForm(Form):
     def __init__(self, initial:dict, parent=None):
         super().__init__(parent=parent, ui_file=template("credentials.ui"))
         self.setWindowTitle("Reset Credentials")

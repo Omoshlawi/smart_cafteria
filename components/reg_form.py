@@ -6,10 +6,10 @@ from PyQt6.QtWidgets import QLineEdit, QPushButton, QLabel, QComboBox
 from auth.models import User
 from students.models import Student
 from utils.utilities import template
-from view.generics import Dialog
+from view.generics import Form
 
 
-class StudentRegistrationForm(Dialog):
+class StudentRegistrationForm(Form):
     def __init__(self, parent=None, initial: dict = None):
         super().__init__(parent=parent, ui_file=template("studentsAddDialog.ui"))
         self._update = False

@@ -28,7 +28,7 @@ class View:
     #     raise NotImplementedError()
 
 
-class Dialog(QDialog):
+class Form(QDialog):
     def __init__(self, ui_file: str, parent=None):
         super().__init__(parent=parent)
 
