@@ -227,7 +227,8 @@ class OrderItemsView(View):
         self.addItem.clicked.connect(self.handleAddItem)
         self.updateItem.clicked.connect(self.handleItemUpdate)
         self.deleteItem.clicked.connect(self.handleItemDelete)
-        self.apply.clicked.connect(self.onClickApplyButton)
+        self.deleteAllItems.clicked.connect(self.handleDeleteAllItems)
+        self.apply.clicked.connect(self.window.accept)
         self.cancel.clicked.connect(self.window.reject)
         self.treeView.itemDoubleClicked.connect(self.onItemDoubleClicked)
 
@@ -246,6 +247,19 @@ class OrderItemsView(View):
                 order_item.delete()
                 self.setUpOrderItemsList()
                 self.clearInputs()
+
+    def handleDeleteAllItems(self):
+        dlg = QMessageBox(self.window)
+        dlg.setStandardButtons(QMessageBox.StandardButton.Apply | QMessageBox.StandardButton.Cancel)
+        dlg.setWindowTitle("Warning!!")
+        dlg.setText(f"Are you sure you want to delete all order Items\n"
+                    f"This operation will permanently delete the record")
+        status = dlg.exec()
+        if status == QMessageBox.StandardButton.Apply:
+            for item in OrderItem.filter(order_id=self._order_dict['id']):
+                item.delete()
+            self.setUpOrderItemsList()
+            self.clearInputs()
 
     def handleItemUpdate(self):
         cd = self.cleaned_data()
@@ -288,10 +302,6 @@ class OrderItemsView(View):
                 self.clearInputs()
             except Exception as e:
                 self.error.setText(str(e))
-
-    def onClickApplyButton(self):
-        pass
-        self.window.accept()
 
     def exec(self):
         return self.window.exec()
