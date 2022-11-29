@@ -118,5 +118,9 @@ class StudentsView(View):
             student = Student.get(user=user.user_id.value)
             return student
         except Exception as e:
-            # TODO ADD ERROR MESSAFE
-            print(f"{e=}")
+            print(self.window)
+            dlg = QMessageBox(self.window)
+            dlg.setStandardButtons(QMessageBox.StandardButton.Ok)
+            dlg.setWindowTitle("Error!!")
+            dlg.setText(str(e))
+            status = dlg.exec()

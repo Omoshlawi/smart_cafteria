@@ -16,6 +16,7 @@ class StudentRegistrationForm(Dialog):
         if initial:
             self._update = True
             self._student_id = initial['id']
+            self._users = {user.user_id.value: user.username.value for user in User.all()}
         self.firstName = cast(QLineEdit, self.findChild(QLineEdit, 'firstName'))
         self.lastName = cast(QLineEdit, self.findChild(QLineEdit, 'lastName'))
         self.email = cast(QLineEdit, self.findChild(QLineEdit, 'email'))
@@ -27,9 +28,10 @@ class StudentRegistrationForm(Dialog):
         self.error = cast(QLabel, self.findChild(QLabel, 'error'))
         self.comboUser = cast(QComboBox, self.findChild(QComboBox, 'comboUser'))
         if self._update:
-            self._users = {user.user_id.value: user.username.value for user in User.all()}
             self.fillComboBox()
             self.populate(data=initial)
+        else:
+            self.baseLayout.removeRow(0)
 
         self.setModal(True)
         self.addEventListeners()
@@ -38,8 +40,8 @@ class StudentRegistrationForm(Dialog):
         # if self._update:
         self.comboUser.addItems(self._users.values())
         self.comboUser.setCurrentIndex(0)
-        if not self._update:
-            self.baseLayout.removeRow(0)
+        print(self._update)
+
 
     def populate(self, data: dict):
         try:

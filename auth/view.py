@@ -1,7 +1,7 @@
 from typing import cast
 
 from PyQt6.QtGui import QPixmap
-from PyQt6.QtWidgets import QDialog, QLabel, QLineEdit, QCheckBox, QPushButton
+from PyQt6.QtWidgets import QDialog, QLabel, QLineEdit, QCheckBox, QPushButton, QMessageBox
 
 from auth.models import User
 from core.exceptions import ObjectDoesNotExistError, MultipleObjectsError
@@ -57,4 +57,8 @@ class LoginView(View):
         except MultipleObjectsError:
             self.error.setText("Invalid username or password")
         except Exception as e:
-            print(f'{e=}')
+            dlg = QMessageBox(self.window)
+            dlg.setStandardButtons(QMessageBox.StandardButton.Ok)
+            dlg.setWindowTitle("Error!!")
+            dlg.setText(str(e))
+            status = dlg.exec()

@@ -500,9 +500,7 @@ class Model(Manager):
         db = SqliteDb.getDatabase()
         records = db.getRecords(cls())
         db.close()
-        for rec in records:
-            yield cls(**rec)
-        # return map(lambda x: cls(**x), records)
+        return map(lambda x: cls(**x), records)
 
     @classmethod
     def filter(cls, **kwargs):
