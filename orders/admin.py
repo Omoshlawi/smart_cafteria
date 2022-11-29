@@ -111,12 +111,15 @@ class OrderAdmin(BaseManager):
     def handleAddOrder(self):
         cd = self.cleaned_data()
         if cd:
-            Orders.create(
-                user=cd['user'],
-                created=cd['created'],
-                paid=cd['paid']
-            )
-            self.setUpOrdersList()
+            try:
+                Orders.create(
+                    user=cd['user'],
+                    created=cd['created'],
+                    paid=cd['paid']
+                )
+                self.setUpOrdersList()
+            except Exception as e:
+                self.error.setText(str(e))
 
     def cleaned_data(self) -> typing.Dict:
         # print(self.created.dateTimeFromText(self.created.text()))
@@ -213,7 +216,7 @@ class OrderItemsView(View):
                     str(food),
                     str(food.unit_price.value),
                     str(item.quantity.value),
-                    str(item.price.value)
+                    str(item.getTotalPrice())
                 ]
                 self.treeView.addTopLevelItems([QTreeWidgetItem(values)])
         except Exception as e:
@@ -222,20 +225,52 @@ class OrderItemsView(View):
 
     def addEventHandlers(self):
         self.addItem.clicked.connect(self.handleAddItem)
+        self.updateItem.clicked.connect(self.handleItemUpdate)
         self.apply.clicked.connect(self.onClickApplyButton)
         self.cancel.clicked.connect(self.window.reject)
+        self.treeView.itemDoubleClicked.connect(self.onItemDoubleClicked)
+
+    def handleItemUpdate(self):
+        cd = self.cleaned_data()
+        if cd and self._currentOrderItem != -1:
+            try:
+                item = OrderItem.get(id=self._currentOrderItem)
+                item.food.setValue(cd['food'])
+                item.quantity.setValue(cd['quantity'])
+                item.save()
+                self.setUpOrderItemsList()
+                self.clearInputs()
+            except Exception as e:
+                self.error.setText(str(e))
+
+    def onItemDoubleClicked(self, item):
+        id_ = int(item.text(0))
+        self._currentOrderItem = id_
+        order_item = OrderItem.get(id=id_)
+        self.populateFields(order_item.toJson())
+
+    def populateFields(self, data):
+        try:
+            self.itemId.setText(str(data['id']))
+            self.foodCombo.setCurrentText(str(Food.get(food_id=data['food'])))
+            self.quantity.setValue(data['quantity'])
+        except Exception as e:
+            # todo decide wether tho remove me or not
+            print(e)
 
     def handleAddItem(self):
         cd = self.cleaned_data()
         if cd:
-            OrderItem.create(
-                order_id=self._order_dict['id'],
-                food=cd['food'],
-                quantity=cd['quantity'],
-                price=(cd['quantity'] * Food.get(food_id=cd['food']).unit_price.value)
-            )
-            self.setUpOrderItemsList()
-            self.clearInputs()
+            try:
+                OrderItem.create(
+                    order_id=self._order_dict['id'],
+                    food=cd['food'],
+                    quantity=cd['quantity'],
+                )
+                self.setUpOrderItemsList()
+                self.clearInputs()
+            except Exception as e:
+                self.error.setText(str(e))
 
     def onClickApplyButton(self):
         pass

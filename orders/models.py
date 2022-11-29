@@ -10,7 +10,7 @@ class Orders(models.Model):
     paid = models.BooleanField(default=False)
 
     def getTotalCost(self):
-        return sum([item.price.value for item in OrderItem.filter(order_id=self.id.value)])
+        return sum([item.getTotalPrice() for item in OrderItem.filter(order_id=self.id.value)])
 
 
 class OrderItem(models.Model):
@@ -19,5 +19,7 @@ class OrderItem(models.Model):
                                       on_delete=models.OnRelationShipModified.DELETE_CASCADE)
     food = models.ForeignKeyField(Food, on_delete=models.OnRelationShipModified.DELETE_CASCADE,
                                   related_name='order_items')
-    price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField(default=1)
+
+    def getTotalPrice(self):
+        return Food.get(food_id=self.food.value).unit_price.value * self.quantity.value
