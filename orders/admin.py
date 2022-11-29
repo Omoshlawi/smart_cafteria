@@ -83,7 +83,8 @@ class OrderAdmin(BaseManager):
     def populateFields(self, data):
         try:
             self.orderId.setText(str(data['id']))
-            self.created.setDateTime(self.created.dateTimeFromText(data['created']))
+            # todo fix the time populate bug
+            self.created.setDateTime(QDateTime.fromString(data['created']))
             self.paid.setChecked(data['paid'] == 1)
             self.orderUser.setCurrentText(str(User.get(user_id=data['user'])))
         except Exception as e:
@@ -136,7 +137,7 @@ class OrderAdmin(BaseManager):
     def setUpOrdersList(self):
         self.treeView.clear()
         try:
-            self.treeView.setColumnCount(4)
+            self.treeView.setColumnCount(6)
             self.treeView.setSortingEnabled(True)
             headers = [
                 'id',

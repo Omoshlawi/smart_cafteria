@@ -3,6 +3,7 @@ from typing import cast
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import QMainWindow, QLabel, QVBoxLayout, QCommandLinkButton
 
+from account.admin import AccountAdmin
 from orders.admin import OrderAdmin
 from staff.states.base import BaseManager
 from staff.states.food import FoodAdmin
@@ -22,8 +23,9 @@ class AdminView(View):
         self.manageStaff = cast(QCommandLinkButton, self.window.findChild(QCommandLinkButton, 'manageStaff'))
         self.manageSales = cast(QCommandLinkButton, self.window.findChild(QCommandLinkButton, 'manageSales'))
         self.manageFood = cast(QCommandLinkButton, self.window.findChild(QCommandLinkButton, 'manageFood'))
-        self.dashBord = cast(QCommandLinkButton, self.window.findChild(QCommandLinkButton, 'dashBord'))
-        self.accounts = cast(QCommandLinkButton, self.window.findChild(QCommandLinkButton, 'accounts'))
+        self.dashBoard = cast(QCommandLinkButton, self.window.findChild(QCommandLinkButton, 'dashBoard'))
+        self.transactions = cast(QCommandLinkButton, self.window.findChild(QCommandLinkButton, 'transactions'))
+        self.manageAccounts = cast(QCommandLinkButton, self.window.findChild(QCommandLinkButton, 'accounts'))
         self.currUser = cast(QLabel, self.window.findChild(QLabel, 'user'))
         self.jkuat_logo = cast(QLabel, self.window.findChild(QLabel, 'jkuat_logo'))
         self.vstec_logo = cast(QLabel, self.window.findChild(QLabel, 'vstec_logo'))
@@ -52,3 +54,4 @@ class AdminView(View):
         self.manageStaff.clicked.connect(lambda: self.setCurrentState(StaffManager()))
         self.manageFood.clicked.connect(lambda: self.setCurrentState(FoodAdmin()))
         self.manageSales.clicked.connect(lambda: self.setCurrentState(OrderAdmin()))
+        self.manageAccounts.clicked.connect(lambda: self.setCurrentState(AccountAdmin()))

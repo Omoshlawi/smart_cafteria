@@ -20,7 +20,7 @@
       <x>10</x>
       <y>10</y>
       <width>711</width>
-      <height>396</height>
+      <height>424</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="baseLayout">
@@ -69,16 +69,23 @@
           </widget>
          </item>
          <item>
-          <widget class="QCommandLinkButton" name="dashBord">
+          <widget class="QCommandLinkButton" name="accounts">
            <property name="text">
-            <string>DashBoard</string>
+            <string>Accounts</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCommandLinkButton" name="accounts">
+          <widget class="QCommandLinkButton" name="transactions">
            <property name="text">
-            <string>Accounts</string>
+            <string>Transactions</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCommandLinkButton" name="dashBoard">
+           <property name="text">
+            <string>DashBoard</string>
            </property>
           </widget>
          </item>
