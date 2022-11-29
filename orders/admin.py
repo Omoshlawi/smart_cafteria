@@ -226,9 +226,26 @@ class OrderItemsView(View):
     def addEventHandlers(self):
         self.addItem.clicked.connect(self.handleAddItem)
         self.updateItem.clicked.connect(self.handleItemUpdate)
+        self.deleteItem.clicked.connect(self.handleItemDelete)
         self.apply.clicked.connect(self.onClickApplyButton)
         self.cancel.clicked.connect(self.window.reject)
         self.treeView.itemDoubleClicked.connect(self.onItemDoubleClicked)
+
+    def handleItemDelete(self):
+        curr_item = self.treeView.currentItem()
+        if curr_item:
+            id_ = int(curr_item.text(0))
+            order_item = OrderItem.get(id=id_)
+            dlg = QMessageBox(self.window)
+            dlg.setStandardButtons(QMessageBox.StandardButton.Apply | QMessageBox.StandardButton.Cancel)
+            dlg.setWindowTitle("Warning!!")
+            dlg.setText(f"Are you sure you want to delete Item-'{Food.get(food_id=order_item.food.value)}'\n"
+                        f"This operation will permanently delete the record")
+            status = dlg.exec()
+            if status == QMessageBox.StandardButton.Apply:
+                order_item.delete()
+                self.setUpOrderItemsList()
+                self.clearInputs()
 
     def handleItemUpdate(self):
         cd = self.cleaned_data()
