@@ -3,7 +3,7 @@ from typing import cast
 
 from PyQt6.QtCore import QDateTime
 from PyQt6.QtWidgets import QWidget, QLineEdit, QDateTimeEdit, QComboBox, QCheckBox, QPushButton, QVBoxLayout, \
-    QTreeWidget, QTreeWidgetItem, QLabel
+    QTreeWidget, QTreeWidgetItem, QLabel, QMessageBox
 
 from auth.models import User
 from orders.models import Orders
@@ -41,6 +41,23 @@ class OrderAdmin(BaseManager):
         self.addOrder.clicked.connect(self.handleAddOrder)
         self.updateOrder.clicked.connect(self.handleUpdateOrder)
         self.treeView.itemDoubleClicked.connect(self.onOrderDoubleClicked)
+        self.deleteOrder.clicked.connect(self.handleDeleteOrder)
+
+    def handleDeleteOrder(self):
+        curr_item = self.treeView.currentItem()
+        if curr_item:
+            id_ = int(curr_item.text(0))
+            order = Orders.get(id=id_)
+            dlg = QMessageBox(self.window)
+            dlg.setStandardButtons(QMessageBox.StandardButton.Apply | QMessageBox.StandardButton.Cancel)
+            dlg.setWindowTitle("Warning!!")
+            dlg.setText(f"Are you sure you want to delete Order-'{order.id.value}'\n"
+                        f"This operation will permanently delete the record")
+            status = dlg.exec()
+            if status == QMessageBox.StandardButton.Apply:
+                order.delete()
+                self.setUpOrdersList()
+                self.clearInputs()
 
     def onOrderDoubleClicked(self, item):
         id_ = int(item.text(0))
