@@ -165,7 +165,7 @@ class TransactionAdmin(BaseManager):
         self.addTransaction = cast(QPushButton, self.window.findChild(QPushButton, 'addTransaction'))
         self.updateTransaction = cast(QPushButton, self.window.findChild(QPushButton, 'updateTransaction'))
         self.deleteTransaction = cast(QPushButton, self.window.findChild(QPushButton, 'deleteTransaction'))
-        self.rollBackOnDelete = cast(QCheckBox, self.window.findChild(QComboBox, 'rollBackOnDelete'))
+        self.rollBackOnDelete = cast(QCheckBox, self.window.findChild(QCheckBox, 'rollBackOnDelete'))
         self.error = cast(QLabel, self.window.findChild(QLabel, 'error'))
         self.treeContainer = cast(QVBoxLayout, self.window.findChild(QVBoxLayout, 'treeContainer'))
         self._current_transaction_id = -1
@@ -228,7 +228,32 @@ class TransactionAdmin(BaseManager):
                 self.error.setText(str(e))
 
     def handleDeleteTrans(self):
-        pass
+        curr_item = self.treeView.currentItem()
+        if curr_item:
+            try:
+                id_ = int(curr_item.text(0))
+                transaction = Transactions.get(id=id_)
+                order = Orders.get(id=transaction.order_transaction.value)
+                account = Account.get(user=order.user.value)
+                dlg = QMessageBox(self.window)
+                dlg.setStandardButtons(QMessageBox.StandardButton.Apply | QMessageBox.StandardButton.Cancel)
+                dlg.setWindowTitle("Warning!!")
+                dlg.setText(
+                    f"Are you sure you want to delete Transaction-'{transaction.id.value}' for {User.get(user_id=order.user.value).get_full_name()}\n "
+                    f"This operation will permanently delete the record {'and rollback payment' if self.rollBackOnDelete.isChecked() else ''}")
+                status = dlg.exec()
+                if status == QMessageBox.StandardButton.Apply:
+                    if self.rollBackOnDelete.isChecked():
+                        bal = account.balance.value
+                        account.balance.setValue(bal + order.getTotalCost())
+                        order.paid.setValue(False)
+                        account.save()
+                        order.save()
+                    transaction.delete()
+                    self.setUpTransactionsList()
+                    self.clearInputs()
+            except Exception as e:
+                self.error.setText(str(e))
 
     def handleUpdateTrans(self):
         cd = self.cleaned_data()
