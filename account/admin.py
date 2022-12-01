@@ -7,6 +7,7 @@ from PyQt6.QtWidgets import QWidget, QLineEdit, QComboBox, QDoubleSpinBox, QPush
 
 from account.models import Account, Transactions
 from auth.models import User
+from core.exceptions import ObjectDoesNotExistError
 from orders.models import Orders
 from staff.states.base import BaseManager
 from utils.utilities import template
@@ -185,13 +186,26 @@ class TransactionAdmin(BaseManager):
         self.deleteTransaction.clicked.connect(self.handleDeleteTrans)
 
     def onTransItemDoubleClicked(self, item):
-        pass
+        id_ = int(item.text(0))
+        self._current_transaction_id = id_
+        transaction = Transactions.get(id=id_)
+        self.populateFields(transaction.toJson())
+
+    def populateFields(self, data):
+        try:
+            self.transactionId.setText(str(data['id']))
+            # todo fix the time populate bug
+            self.created.setDateTime(QDateTime.fromString(data['created']))
+            self.orders.setCurrentText(f"ord-{data['order_transaction']}")
+        except Exception as e:
+            # todo decide wether tho remove me or not
+            print(e)
 
     def handleAddTrans(self):
         cd = self.cleaned_data()
         if cd:
+            order = Orders.get(id=cd['order_transaction'])
             try:
-                order = Orders.get(id=cd['order_transaction'])
                 account = Account.get(user=order.user.value)
                 bal = account.balance.value
                 if order.getTotalCost() > bal:
@@ -207,30 +221,69 @@ class TransactionAdmin(BaseManager):
                 )
                 self.setUpTransactionsList()
                 self.clearInputs()
+            except ObjectDoesNotExistError:
+                self.error.setText(
+                    f"Order User '{User.get(user_id=order.user.value).username.value}' has no account, Please create one")
             except Exception as e:
-                self.error.setText("Insufficient account balance")
+                self.error.setText(str(e))
 
     def handleDeleteTrans(self):
         pass
 
     def handleUpdateTrans(self):
-        pass
+        cd = self.cleaned_data()
+        if cd and self._current_transaction_id != -1:
+            transaction = Transactions.get(id=self._current_transaction_id)
+            order = Orders.get(id=transaction.order_transaction.value)
+            order2 = Orders.get(id=cd['order_transaction'])
+            try:
+                account = Account.get(user=order.user.value)
+                account2 = Account.get(user=order2.user.value)
+                bal = account.balance.value
+                bal2 = account2.balance.value
+                if transaction.order_transaction.value != cd[
+                    'order_transaction'] and order2.getTotalCost() <= account2.balance.value:
+                    # rollback the previous one and subtract the current
+                    # 1. rollback trans of previous order
+                    print(bal + order.getTotalCost())
+                    account.balance.setValue(bal + order.getTotalCost())
+                    order.paid.setValue(False)
+                    account.save()
+                    order.save()
+                    # 2. Trasact account of new order
+                    account2.balance.setValue(bal2 - order.getTotalCost())
+                    order2.paid.setValue(True)
+                    order2.save()
+                    account2.save()
+                    transaction.order_transaction.setValue(cd['order_transaction'])
+                transaction.created.setValue(cd['created'])
+                transaction.save()
+                self.setUpTransactionsList()
+                self.clearInputs()
+            except ObjectDoesNotExistError as e:
+                self.error.setText(
+                    f"Order User '{User.get(user_id=order.user.value).username.value}' has no account, Please create one")
+            except Exception as e:
+                self.error.setText(str(e))
 
     def setUpTransactionsList(self):
         self.treeView.clear()
         try:
-            self.treeView.setColumnCount(4)
+            self.treeView.setColumnCount(5)
             self.treeView.setSortingEnabled(True)
             headers = [
                 'id',
+                'User',
                 'Created',
                 'Order',
                 'Amount'
             ]
             self.treeView.setHeaderLabels(headers)
             for transaction in Transactions.all():
+                order = Orders.get(id=transaction.order_transaction.value)
                 values = [
                     str(transaction.id.value),
+                    User.get(user_id=order.user.value).username.value,
                     str(transaction.created.value),
                     f"ord-{transaction.order_transaction.value}",
                     str(transaction.getAmount())
@@ -257,5 +310,3 @@ class TransactionAdmin(BaseManager):
             self.error.setText("Invalid Order!!")
             return {}
         return data
-
-
