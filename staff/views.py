@@ -3,7 +3,7 @@ from typing import cast
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import QMainWindow, QLabel, QVBoxLayout, QCommandLinkButton
 
-from account.admin import AccountAdmin
+from account.admin import AccountAdmin, TransactionAdmin
 from orders.admin import OrderAdmin
 from staff.states.base import BaseManager
 from staff.states.food import FoodAdmin
@@ -24,7 +24,7 @@ class AdminView(View):
         self.manageSales = cast(QCommandLinkButton, self.window.findChild(QCommandLinkButton, 'manageSales'))
         self.manageFood = cast(QCommandLinkButton, self.window.findChild(QCommandLinkButton, 'manageFood'))
         self.dashBoard = cast(QCommandLinkButton, self.window.findChild(QCommandLinkButton, 'dashBoard'))
-        self.transactions = cast(QCommandLinkButton, self.window.findChild(QCommandLinkButton, 'transactions'))
+        self.manageTransactions = cast(QCommandLinkButton, self.window.findChild(QCommandLinkButton, 'transactions'))
         self.manageAccounts = cast(QCommandLinkButton, self.window.findChild(QCommandLinkButton, 'accounts'))
         self.currUser = cast(QLabel, self.window.findChild(QLabel, 'user'))
         self.jkuat_logo = cast(QLabel, self.window.findChild(QLabel, 'jkuat_logo'))
@@ -55,3 +55,4 @@ class AdminView(View):
         self.manageFood.clicked.connect(lambda: self.setCurrentState(FoodAdmin()))
         self.manageSales.clicked.connect(lambda: self.setCurrentState(OrderAdmin()))
         self.manageAccounts.clicked.connect(lambda: self.setCurrentState(AccountAdmin()))
+        self.manageTransactions.clicked.connect(lambda: self.setCurrentState(TransactionAdmin()))

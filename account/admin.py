@@ -3,10 +3,11 @@ from typing import cast
 
 from PyQt6.QtCore import QDateTime
 from PyQt6.QtWidgets import QWidget, QLineEdit, QComboBox, QDoubleSpinBox, QPushButton, QLabel, \
-    QVBoxLayout, QTreeWidget, QTreeWidgetItem, QDateTimeEdit, QMessageBox
+    QVBoxLayout, QTreeWidget, QTreeWidgetItem, QDateTimeEdit, QMessageBox, QCheckBox
 
-from account.models import Account
+from account.models import Account, Transactions
 from auth.models import User
+from orders.models import Orders
 from staff.states.base import BaseManager
 from utils.utilities import template
 
@@ -150,3 +151,111 @@ class AccountAdmin(BaseManager):
         self.created.setDateTime(QDateTime.currentDateTime())
         self.balance.setValue(0.0)
         self.accountId.clear()
+
+
+class TransactionAdmin(BaseManager):
+    def __init__(self):
+        super(TransactionAdmin, self).__init__(QWidget(), template("transactionManager.ui"))
+        self._orders = {order.id.value: f"ord-{order.id.value}" for order in Orders.all()}
+        self.transactionId = cast(QLineEdit, self.window.findChild(QLineEdit, 'transactionId'))
+        self.created = cast(QDateTimeEdit, self.window.findChild(QDateTimeEdit, 'created'))
+        self.created.setDateTime(QDateTime.currentDateTime())
+        self.orders = cast(QComboBox, self.window.findChild(QComboBox, 'orders'))
+        self.addTransaction = cast(QPushButton, self.window.findChild(QPushButton, 'addTransaction'))
+        self.updateTransaction = cast(QPushButton, self.window.findChild(QPushButton, 'updateTransaction'))
+        self.deleteTransaction = cast(QPushButton, self.window.findChild(QPushButton, 'deleteTransaction'))
+        self.rollBackOnDelete = cast(QCheckBox, self.window.findChild(QComboBox, 'rollBackOnDelete'))
+        self.error = cast(QLabel, self.window.findChild(QLabel, 'error'))
+        self.treeContainer = cast(QVBoxLayout, self.window.findChild(QVBoxLayout, 'treeContainer'))
+        self._current_transaction_id = -1
+        self.treeView = QTreeWidget()
+        self.treeContainer.addWidget(self.treeView)
+        self.fillComboBox()
+        self.addEventHandlers()
+        self.setUpTransactionsList()
+
+    def fillComboBox(self):
+        self.orders.addItems(self._orders.values())
+        self.orders.setCurrentText('-------------------')
+
+    def addEventHandlers(self):
+        self.addTransaction.clicked.connect(self.handleAddTrans)
+        self.updateTransaction.clicked.connect(self.handleUpdateTrans)
+        self.treeView.itemDoubleClicked.connect(self.onTransItemDoubleClicked)
+        self.deleteTransaction.clicked.connect(self.handleDeleteTrans)
+
+    def onTransItemDoubleClicked(self, item):
+        pass
+
+    def handleAddTrans(self):
+        cd = self.cleaned_data()
+        if cd:
+            try:
+                order = Orders.get(id=cd['order_transaction'])
+                account = Account.get(user=order.user.value)
+                bal = account.balance.value
+                if order.getTotalCost() > bal:
+                    self.error.setText("Insufficient account balance")
+                    return
+                account.balance.setValue(bal - order.getTotalCost())
+                order.paid.setValue(True)
+                order.save()
+                account.save()
+                Transactions.create(
+                    order_transaction=cd['order_transaction'],
+                    created=cd['created']
+                )
+                self.setUpTransactionsList()
+                self.clearInputs()
+            except Exception as e:
+                self.error.setText("Insufficient account balance")
+
+    def handleDeleteTrans(self):
+        pass
+
+    def handleUpdateTrans(self):
+        pass
+
+    def setUpTransactionsList(self):
+        self.treeView.clear()
+        try:
+            self.treeView.setColumnCount(4)
+            self.treeView.setSortingEnabled(True)
+            headers = [
+                'id',
+                'Created',
+                'Order',
+                'Amount'
+            ]
+            self.treeView.setHeaderLabels(headers)
+            for transaction in Transactions.all():
+                values = [
+                    str(transaction.id.value),
+                    str(transaction.created.value),
+                    f"ord-{transaction.order_transaction.value}",
+                    str(transaction.getAmount())
+                ]
+                self.treeView.addTopLevelItems([QTreeWidgetItem(values)])
+
+        except Exception as e:
+            # todo display message box
+            print(self.__module__, e)
+
+    def clearInputs(self):
+        self._current_transaction_id = -1
+        self.orders.setCurrentText("----------")
+        self.created.setDateTime(QDateTime.currentDateTime())
+        self.transactionId.clear()
+
+    def cleaned_data(self) -> typing.Dict:
+        self.error.clear()
+        data = {'created': self.created.dateTime().toPyDateTime()}
+        try:
+            index = tuple(self._orders.values()).index(self.orders.currentText())
+            data['order_transaction'] = tuple(self._orders.keys())[index]
+        except Exception as e:
+            self.error.setText("Invalid Order!!")
+            return {}
+        return data
+
+
