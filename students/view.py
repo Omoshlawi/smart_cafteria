@@ -118,6 +118,7 @@ class StudentsView(View):
                     order = Orders.create(
                         user=self.user.user_id.value,
                         created=datetime.now(),
+                        paid=True
                     )
                     # 2. create order Items for the current order
                     for item in self._menuItems:
@@ -131,9 +132,7 @@ class StudentsView(View):
                         created=datetime.now(),
                     )
                     account = Account.get(user=self.user.user_id.value)
-                    print(account.toJson())
                     account.debit(float(self.totalCost.text()))
-                    print(account.toJson())
                     account.save()
                     self.initUiValues()
                 except Exception as e:
