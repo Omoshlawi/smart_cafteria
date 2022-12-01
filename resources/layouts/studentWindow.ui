@@ -466,16 +466,6 @@ background-color: rgb(0, 255, 0);</string>
          <item row="0" column="0">
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
-            <widget class="QLabel" name="labelselected">
-             <property name="text">
-              <string>Receipt Priview</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QTextEdit" name="textEditorselected"/>
-           </item>
-           <item>
             <spacer name="verticalSpacer_2">
              <property name="orientation">
               <enum>Qt::Vertical</enum>

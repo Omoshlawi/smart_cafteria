@@ -6,10 +6,10 @@ from components.quantasizer import QuantaSizer
 class MenuItem:
     def __init__(self, food, updateTotal):
         self.updateTotal = updateTotal
-        self._food = food
+        self._food = food.toJson()
         self._meal = QCheckBox()
-        self._meal.setText(food.food_name.value)
-        self._price = QLabel(str(food.unit_price.value))
+        self._meal.setText(self._food['food_name'])
+        self._price = QLabel(str(self._food['unit_price']))
         self._total_cost = QLineEdit(str(0))
         self._total_cost.setReadOnly(True)
         self._quantaSizer = QuantaSizer(
@@ -35,14 +35,26 @@ class MenuItem:
 
     def __str__(self):
         return str({
-            'Food': self._food.food_name.value,
+            'Food': self._food['food_name'],
             'Quantity': self._quantaSizer.text,
-            'Price': self._food.unit_price.value,
+            'Price': self._food['unit_price'],
             'Total': self._total_cost.text()
         })
 
     def __repr__(self):
         return self.__str__()
+
+    @property
+    def mealId(self):
+        return self._food['food_id']
+
+    @property
+    def selected(self) -> bool:
+        return self.meal.isChecked()
+
+    @property
+    def buyable(self) -> bool:
+        return self._meal.isChecked() and int(self.quantaSizer.text) > 0
 
     @property
     def meal(self):

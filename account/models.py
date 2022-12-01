@@ -9,6 +9,12 @@ class Account(models.Model):
     balance = models.DecimalField(max_digits=12, decimal_places=2)
     created = models.DateTimeField(auto_now_add=True)
 
+    def debit(self, amount: float):
+        self.balance.setValue(float(self.balance.value) - amount)
+
+    def credit(self, amount: float):
+        self.balance.setValue(float(self.balance.value) + amount)
+
 
 class Transactions(models.Model):
     id = models.PositiveIntegerField(primary_key=True, auto_increment=True)

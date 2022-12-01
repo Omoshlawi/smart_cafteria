@@ -1,3 +1,4 @@
+import typing
 from datetime import datetime
 from typing import cast
 
@@ -6,9 +7,10 @@ from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import QMainWindow, QLabel, QLineEdit, QDateEdit, QGroupBox, QVBoxLayout, QGridLayout, QLCDNumber, \
     QMessageBox, QPushButton
 
-from account.models import Account
+from account.models import Account, Transactions
 from components.menu_item import MenuItem
 from food.models import Food
+from orders.models import Orders, OrderItem
 from settings import CASHIER_NUMBER
 from students.models import Student
 from utils.utilities import template, static
@@ -18,7 +20,7 @@ from view.generics import View
 class StudentsView(View):
     def __init__(self, user):
         self.user = user
-        self._menuItems = []
+        self._menuItems: typing.List[MenuItem] = []
         self.student = self.getCurrentStudent(user)
         super(StudentsView, self).__init__(QMainWindow(), template('studentWindow.ui'))
         self.jkuat_logo = cast(QLabel, self.window.findChild(QLabel, 'jkuat_logo'))
@@ -93,8 +95,9 @@ class StudentsView(View):
             dialog = QMessageBox(self.window)
             dialog.setModal(True)
             dialog.setWindowTitle("Error!")
-            dialog.setText(f"This operation Can't Proceed.You have insufficient balance of {self.accountBalance.text()}\n"
-                           f".Please Top up and try again")
+            dialog.setText(
+                f"This operation Can't Proceed.You have insufficient balance of {self.accountBalance.text()}\n"
+                f".Please Top up and try again")
             dialog.setStandardButtons(QMessageBox.StandardButton.Ok)
             dialog.exec()
             return
@@ -102,12 +105,44 @@ class StudentsView(View):
             dialog = QMessageBox(self.window)
             dialog.setModal(True)
             dialog.setWindowTitle("Confirmation")
-            dialog.setText(f"The operation will deduct Ksh. {amount} "
-                           f"from your account\nAre you sure you wanna proceed")
+            dialog.setText(
+                f"\n{self.getFoodItems()}"
+                f"\n\nKsh. {amount} will be deducted from you account"
+                f"\nAre you sure you wanna proceed"
+            )
             dialog.setStandardButtons(QMessageBox.StandardButton.No | QMessageBox.StandardButton.Yes)
             status = dialog.exec()
             if status == QMessageBox.StandardButton.Yes:
-                print(self.accountBalance.text())
+                try:
+                    # 1. create order
+                    order = Orders.create(
+                        user=self.user.user_id.value,
+                        created=datetime.now(),
+                    )
+                    # 2. create order Items for the current order
+                    for item in self._menuItems:
+                        OrderItem.create(
+                            order_id=order.id.value,
+                            food=item.mealId,
+                            quantity=int(item.quantaSizer.text),
+                        )
+                    transaction = Transactions.create(
+                        order_transaction=order.id.value,
+                        created=datetime.now(),
+                    )
+                    account = Account.get(user=self.user.user_id.value)
+                    print(account.toJson())
+                    account.debit(float(self.totalCost.text()))
+                    print(account.toJson())
+                    account.save()
+                    self.initUiValues()
+                except Exception as e:
+                    print(e)
+
+    def getFoodItems(self) -> str:
+        # '{revenue:>7,} | {profit:>+6} | {percent:>7.2%}'
+        return ("\n".join([f"{item.meal.text()} * {item.quantaSizer.text} = {item.totalCost.text()}"
+                           f"" for item in self._menuItems if item.buyable]))
 
     def initUiValues(self):
         try:

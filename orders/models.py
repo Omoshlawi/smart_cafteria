@@ -12,6 +12,11 @@ class Orders(models.Model):
     def getTotalCost(self):
         return sum([item.getTotalPrice() for item in OrderItem.filter(order_id=self.id.value)])
 
+    def toJson(self):
+        json = super(Orders, self).toJson()
+        json['totalCost'] = self.getTotalCost()
+        return json
+
 
 class OrderItem(models.Model):
     id = models.PositiveIntegerField(primary_key=True, auto_increment=True)

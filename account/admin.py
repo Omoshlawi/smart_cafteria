@@ -259,24 +259,27 @@ class TransactionAdmin(BaseManager):
         cd = self.cleaned_data()
         if cd and self._current_transaction_id != -1:
             transaction = Transactions.get(id=self._current_transaction_id)
-            order = Orders.get(id=transaction.order_transaction.value)
-            order2 = Orders.get(id=cd['order_transaction'])
+            order_dict = Orders.get(id=transaction.order_transaction.value).toJson()
+            order2_dict = Orders.get(id=cd['order_transaction']).toJson()
             try:
-                account = Account.get(user=order.user.value)
-                account2 = Account.get(user=order2.user.value)
-                bal = account.balance.value
-                bal2 = account2.balance.value
+                account_dict = Account.get(user=order_dict['user']).toJson()
+                account2_dict = Account.get(user=order2_dict['user']).toJson()
+                bal = account_dict['balance']
+                bal2 = account2_dict['balance']
                 if transaction.order_transaction.value != cd[
-                    'order_transaction'] and order2.getTotalCost() <= account2.balance.value:
+                    'order_transaction'] and order2_dict['totalCost'] <= account2_dict['balance']:
                     # rollback the previous one and subtract the current
                     # 1. rollback trans of previous order
-                    print(bal + order.getTotalCost())
-                    account.balance.setValue(bal + order.getTotalCost())
+                    account = Account.get(id=account_dict['id'])
+                    account.balance.setValue(float(bal + order_dict['totalCost']))
+                    order = Orders.get(id=order_dict['id'])
                     order.paid.setValue(False)
                     account.save()
                     order.save()
                     # 2. Trasact account of new order
-                    account2.balance.setValue(bal2 - order.getTotalCost())
+                    account2 = Account.get(id=account_dict['id'])
+                    account2.balance.setValue(bal2 - order2_dict['totalCost'])
+                    order2 = Orders.get(id=order2_dict['id'])
                     order2.paid.setValue(True)
                     order2.save()
                     account2.save()
@@ -287,7 +290,7 @@ class TransactionAdmin(BaseManager):
                 self.clearInputs()
             except ObjectDoesNotExistError as e:
                 self.error.setText(
-                    f"Order User '{User.get(user_id=order.user.value).username.value}' has no account, Please create one")
+                    f"Order User '{User.get(user_id=order.user.value).username.value}' or {User.get(user_id=order2.user.value).username.value} has no account, Please create one")
             except Exception as e:
                 self.error.setText(str(e))
 
