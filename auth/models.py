@@ -7,11 +7,11 @@ from db import models
 
 class User(models.Model):
     user_id = models.PositiveIntegerField(primary_key=True, auto_increment=True)
-    username = models.CharacterField(max_length=20)
+    username = models.CharacterField(max_length=20, unique=True)
     password = models.PasswordField(max_length=20)
     first_name = models.CharacterField(max_length=20, null=True)
     last_name = models.CharacterField(max_length=20, null=True)
-    email = models.EmailField(max_length=20, null=True)
+    email = models.EmailField(max_length=20, null=True, unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)

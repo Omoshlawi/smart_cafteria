@@ -358,7 +358,7 @@ color:rgb(99, 199, 0);
 font-weight :bold;</string>
                </property>
                <property name="text">
-                <string>66</string>
+                <string>0.0</string>
                </property>
                <property name="readOnly">
                 <bool>true</bool>

@@ -6,6 +6,7 @@ from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import QMainWindow, QLabel, QLineEdit, QDateEdit, QGroupBox, QVBoxLayout, QGridLayout, QLCDNumber, \
     QMessageBox, QPushButton
 
+from account.models import Account
 from components.menu_item import MenuItem
 from food.models import Food
 from settings import CASHIER_NUMBER
@@ -86,7 +87,17 @@ class StudentsView(View):
         self.orderNow.clicked.connect(self.handleOrderAdd)
 
     def handleOrderAdd(self):
+        balance = float(self.accountBalance.text())
         amount = float(self.totalCost.text().strip())
+        if amount > balance:
+            dialog = QMessageBox(self.window)
+            dialog.setModal(True)
+            dialog.setWindowTitle("Error!")
+            dialog.setText(f"This operation Can't Proceed.You have insufficient balance of {self.accountBalance.text()}\n"
+                           f".Please Top up and try again")
+            dialog.setStandardButtons(QMessageBox.StandardButton.Ok)
+            dialog.exec()
+            return
         if amount > 0:
             dialog = QMessageBox(self.window)
             dialog.setModal(True)
@@ -99,19 +110,24 @@ class StudentsView(View):
                 print(self.accountBalance.text())
 
     def initUiValues(self):
-        if self.student:
-            self.regno.setText(self.student.registration_number.value)
-            self.name.setText(self.user.get_full_name())
-            self.email.setText(self.user.email.value)
-        hr = int(datetime.strftime(datetime.now(), "%H"))
-        if hr in range(6, 8):
-            self.mealtype.setText("BreakFirst")
-        elif hr in range(11, 14):
-            self.mealtype.setText("Lunch")
-        elif hr in range(17, 20):
-            self.mealtype.setText("Super")
-        else:
-            self.mealtype.setText("")
+        try:
+            if self.student:
+                self.regno.setText(self.student.registration_number.value)
+                self.name.setText(self.user.get_full_name())
+                self.email.setText(self.user.email.value)
+                self.accountBalance.setText(str(Account.get(user=self.user.user_id.value).balance.value))
+            hr = int(datetime.strftime(datetime.now(), "%H"))
+            if hr in range(6, 8):
+                self.mealtype.setText("BreakFirst")
+            elif hr in range(11, 14):
+                self.mealtype.setText("Lunch")
+            elif hr in range(17, 20):
+                self.mealtype.setText("Super")
+            else:
+                self.mealtype.clear()
+        except Exception as e:
+            # TODO DISPLAY RIGHT MESSAGE for errors such as object not found
+            print(e)
 
     def getCurrentStudent(self, user):
         try:
