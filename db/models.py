@@ -372,20 +372,20 @@ class Model(Manager):
         self._validate_kwargs(kwargs)
         self._meta = Model.Meta(self)
         # update the class attrs with the provided ones
-        for key, value in self.get_class_attrs():
+        for key, state in self.get_class_attrs():
             try:
-                if isinstance(value, BooleanField):
-                    value.setValue(kwargs[key] == 1)
-                elif isinstance(value, PasswordField):
+                if isinstance(state, BooleanField):
+                    state.setValue(kwargs[key] == 1)
+                elif isinstance(state, PasswordField):
                     if len(str(kwargs[key])) == 64:
-                        value.setHash(kwargs[key])
+                        state.setHash(kwargs[key])
                     else:
-                        value.setValue(kwargs[key])
+                        state.setValue(kwargs[key])
                 else:
-                    value.setValue(kwargs[key])
+                    state.setValue(kwargs[key])
             except KeyError:
                 # set the unprovided to default
-                value.setValue(getattr(value, "_default"))
+                state.setValue(getattr(state, "_default"))
             except AttributeError as e:
                 raise e
         # TODO CHECK SCHEMA
@@ -405,12 +405,16 @@ class Model(Manager):
     def getMultiFieldsIndex(self) -> typing.List[str]:
         return []
 
-    def getValidMultiFieldIndex(self):
+    @property
+    def validMultiFieldIndex(self) -> typing.List[str]:
+        field = []
         try:
             for col in self.getMultiFieldsIndex():
                 getattr(self, col)
+                field.append(col)
         except AttributeError as e:
             raise e
+        return field
 
     def _validate_kwargs(self, kwargs):
         try:
@@ -425,8 +429,9 @@ class Model(Manager):
 
     @classmethod
     def get_class_attrs(cls) -> typing.Tuple[typing.Tuple[str, typing.Any]]:
-        attributes = inspect.getmembers(cls, lambda a: not (inspect.isroutine(a)) and not (inspect.isclass(a)))
-        attributes = [attr for attr in attributes if not attr[0].startswith("_")]
+        # attributes = inspect.getmembers(cls, lambda a: not (inspect.isroutine(a)) and not (inspect.isclass(a)))
+        # attributes = [attr for attr in attributes if not attr[0].startswith("_")]
+        attributes = inspect.getmembers(cls, lambda attr: isinstance(attr, BaseAbstractField))
         return tuple(attributes)
 
     def get_filed_name(self) -> typing.Tuple:

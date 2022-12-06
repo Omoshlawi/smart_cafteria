@@ -1,6 +1,7 @@
 import os
 
 BASE_DIR = "."
+# BASE_DIR = os.path.dirname(__file__)
 
 SQLITE_DATABASE = os.path.join(BASE_DIR, 'db.sqlite3')
 

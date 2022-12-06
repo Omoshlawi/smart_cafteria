@@ -84,7 +84,7 @@ class OrderAdmin(BaseManager):
         try:
             self.orderId.setText(str(data['id']))
             # todo fix the time populate bug
-            self.created.setDateTime(QDateTime.fromString(data['created']))
+            self.created.setDateTime(self.created.dateTimeFromText(data['created']))
             self.paid.setChecked(data['paid'] == 1)
             self.orderUser.setCurrentText(str(User.get(user_id=data['user'])))
         except Exception as e:

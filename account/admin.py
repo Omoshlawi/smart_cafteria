@@ -85,7 +85,7 @@ class AccountAdmin(BaseManager):
         try:
             self.accountId.setText(str(data['id']))
             # todo fix the time populate bug
-            self.created.setDateTime(QDateTime.fromString(data['created']))
+            self.created.setDateTime(self.created.dateTimeFromText(data['created']))
             self.balance.setValue(data['balance'])
             self.users.setCurrentText(str(User.get(user_id=data['user'])))
         except Exception as e:

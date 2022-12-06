@@ -22,6 +22,7 @@ imports:
  &#8226;   <a href="#_collections_abc">_collections_abc</a>
  &#8226;   <a href="#_weakrefset">_weakrefset</a>
  &#8226;   <a href="#abc">abc</a>
+ &#8226;   <a href="#auth.models">auth.models</a>
  &#8226;   <a href="#auth.view">auth.view</a>
  &#8226;   <a href="#codecs">codecs</a>
  &#8226;   <a href="#collections">collections</a>
@@ -29,6 +30,7 @@ imports:
  &#8226;   <a href="#copyreg">copyreg</a>
  &#8226;   <a href="#datetime">datetime</a>
  &#8226;   <a href="#db.models">db.models</a>
+ &#8226;   <a href="#db.sqlite">db.sqlite</a>
  &#8226;   <a href="#encodings">encodings</a>
  &#8226;   <a href="#encodings.aliases">encodings.aliases</a>
  &#8226;   <a href="#encodings.ascii">encodings.ascii</a>
@@ -162,6 +164,7 @@ imports:
  &#8226;   <a href="#locale">locale</a>
  &#8226;   <a href="#ntpath">ntpath</a>
  &#8226;   <a href="#operator">operator</a>
+ &#8226;   <a href="#orders.models">orders.models</a>
  &#8226;   <a href="#os">os</a>
  &#8226;   <a href="#pathlib">pathlib</a>
  &#8226;   <a href="#posixpath">posixpath</a>
@@ -176,6 +179,7 @@ imports:
  &#8226;   <a href="#sre_constants">sre_constants</a>
  &#8226;   <a href="#sre_parse">sre_parse</a>
  &#8226;   <a href="#stat">stat</a>
+ &#8226;   <a href="#students.models">students.models</a>
  &#8226;   <a href="#sys">sys</a>
  &#8226;   <a href="#token">token</a>
  &#8226;   <a href="#tokenize">tokenize</a>
@@ -271,7 +275,7 @@ imported by:
   <a target="code" href="" type="text/plain"><tt>'org.python'</tt></a>
 <span class="moduletype">MissingModule</span>  <div class="import">
 imported by:
-    <a href="#pickle">pickle</a>
+    <a href="#copy">copy</a>
  &#8226;   <a href="#xml.sax">xml.sax</a>
 
   </div>
@@ -322,6 +326,8 @@ imported by:
  &#8226;   <a href="#PyQt6.QtWidgets">PyQt6.QtWidgets</a>
  &#8226;   <a href="#PyQt6.uic.Loader.loader">PyQt6.uic.Loader.loader</a>
  &#8226;   <a href="#PyQt6.uic.compile_ui">PyQt6.uic.compile_ui</a>
+ &#8226;   <a href="#account.admin">account.admin</a>
+ &#8226;   <a href="#orders.admin">orders.admin</a>
  &#8226;   <a href="#students.view">students.view</a>
 
   </div>
@@ -368,12 +374,14 @@ imported by:
  &#8226;   <a href="#PyQt6.uic.Loader.loader">PyQt6.uic.Loader.loader</a>
  &#8226;   <a href="#PyQt6.uic.Loader.qobjectcreator">PyQt6.uic.Loader.qobjectcreator</a>
  &#8226;   <a href="#PyQt6.uic.load_ui">PyQt6.uic.load_ui</a>
+ &#8226;   <a href="#account.admin">account.admin</a>
  &#8226;   <a href="#auth.view">auth.view</a>
  &#8226;   <a href="#components.creds_form">components.creds_form</a>
  &#8226;   <a href="#components.menu_item">components.menu_item</a>
  &#8226;   <a href="#components.quantasizer">components.quantasizer</a>
  &#8226;   <a href="#components.reg_form">components.reg_form</a>
  &#8226;   <a href="#main.py">main.py</a>
+ &#8226;   <a href="#orders.admin">orders.admin</a>
  &#8226;   <a href="#staff.states.base">staff.states.base</a>
  &#8226;   <a href="#staff.states.food">staff.states.food</a>
  &#8226;   <a href="#staff.states.staff">staff.states.staff</a>
@@ -1674,6 +1682,64 @@ imported by:
 </div>
 
 <div class="node">
+  <a name="account"></a>
+  <a target="code" href="///D:/Programming/pythonGuiProject/cafteria/account/__init__.py" type="text/plain"><tt>account</tt></a>
+<span class="moduletype">Package</span>  <div class="import">
+imported by:
+    <a href="#account.admin">account.admin</a>
+ &#8226;   <a href="#account.models">account.models</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="account.admin"></a>
+  <a target="code" href="///D:/Programming/pythonGuiProject/cafteria/account/admin.py" type="text/plain"><tt>account.admin</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#PyQt6.QtCore">PyQt6.QtCore</a>
+ &#8226;   <a href="#PyQt6.QtWidgets">PyQt6.QtWidgets</a>
+ &#8226;   <a href="#account">account</a>
+ &#8226;   <a href="#account.models">account.models</a>
+ &#8226;   <a href="#auth.models">auth.models</a>
+ &#8226;   <a href="#core.exceptions">core.exceptions</a>
+ &#8226;   <a href="#orders.models">orders.models</a>
+ &#8226;   <a href="#staff.states.base">staff.states.base</a>
+ &#8226;   <a href="#typing">typing</a>
+ &#8226;   <a href="#utils.utilities">utils.utilities</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#staff.views">staff.views</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="account.models"></a>
+  <a target="code" href="///D:/Programming/pythonGuiProject/cafteria/account/models.py" type="text/plain"><tt>account.models</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#account">account</a>
+ &#8226;   <a href="#auth.models">auth.models</a>
+ &#8226;   <a href="#db">db</a>
+ &#8226;   <a href="#db.models">db.models</a>
+ &#8226;   <a href="#orders.models">orders.models</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#account.admin">account.admin</a>
+ &#8226;   <a href="#students.view">students.view</a>
+
+  </div>
+
+</div>
+
+<div class="node">
   <a name="argparse"></a>
   <a target="code" href="///C:/Users/Omosh/AppData/Local/Programs/Python/Python310/lib/argparse.py" type="text/plain"><tt>argparse</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
@@ -1776,9 +1842,14 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#auth.view">auth.view</a>
+    <a href="#account.admin">account.admin</a>
+ &#8226;   <a href="#account.models">account.models</a>
+ &#8226;   <a href="#auth.view">auth.view</a>
  &#8226;   <a href="#components.creds_form">components.creds_form</a>
  &#8226;   <a href="#components.reg_form">components.reg_form</a>
+ &#8226;   <a href="#main.py">main.py</a>
+ &#8226;   <a href="#orders.admin">orders.admin</a>
+ &#8226;   <a href="#orders.models">orders.models</a>
  &#8226;   <a href="#staff.models">staff.models</a>
  &#8226;   <a href="#staff.states.staff">staff.states.staff</a>
  &#8226;   <a href="#staff.states.students">staff.states.students</a>
@@ -2309,8 +2380,8 @@ imported by:
   <a target="code" href="///C:/Users/Omosh/AppData/Local/Programs/Python/Python310/lib/copy.py" type="text/plain"><tt>copy</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
-    <a href="#copyreg">copyreg</a>
- &#8226;   <a href="#org">org</a>
+    <a href="#'org.python'">'org.python'</a>
+ &#8226;   <a href="#copyreg">copyreg</a>
  &#8226;   <a href="#types">types</a>
  &#8226;   <a href="#weakref">weakref</a>
 
@@ -2374,7 +2445,8 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#auth.view">auth.view</a>
+    <a href="#account.admin">account.admin</a>
+ &#8226;   <a href="#auth.view">auth.view</a>
  &#8226;   <a href="#db.models">db.models</a>
  &#8226;   <a href="#db.sqlite">db.sqlite</a>
  &#8226;   <a href="#view.generics">view.generics</a>
@@ -2466,11 +2538,13 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#auth.models">auth.models</a>
+    <a href="#account.models">account.models</a>
+ &#8226;   <a href="#auth.models">auth.models</a>
  &#8226;   <a href="#db.manager">db.manager</a>
  &#8226;   <a href="#db.models">db.models</a>
  &#8226;   <a href="#db.sqlite">db.sqlite</a>
  &#8226;   <a href="#food.models">food.models</a>
+ &#8226;   <a href="#orders.models">orders.models</a>
  &#8226;   <a href="#staff.models">staff.models</a>
  &#8226;   <a href="#students.models">students.models</a>
 
@@ -2514,10 +2588,12 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#auth.models">auth.models</a>
+    <a href="#account.models">account.models</a>
+ &#8226;   <a href="#auth.models">auth.models</a>
  &#8226;   <a href="#db">db</a>
  &#8226;   <a href="#food.models">food.models</a>
  &#8226;   <a href="#main.py">main.py</a>
+ &#8226;   <a href="#orders.models">orders.models</a>
  &#8226;   <a href="#staff.models">staff.models</a>
  &#8226;   <a href="#students.models">students.models</a>
 
@@ -2543,6 +2619,7 @@ imports:
   <div class="import">
 imported by:
     <a href="#db.models">db.models</a>
+ &#8226;   <a href="#main.py">main.py</a>
 
   </div>
 
@@ -5665,7 +5742,9 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#staff.states.food">staff.states.food</a>
+    <a href="#orders.admin">orders.admin</a>
+ &#8226;   <a href="#orders.models">orders.models</a>
+ &#8226;   <a href="#staff.states.food">staff.states.food</a>
  &#8226;   <a href="#students.view">students.view</a>
 
   </div>
@@ -6870,11 +6949,72 @@ imported by:
 </div>
 
 <div class="node">
+  <a name="orders"></a>
+  <a target="code" href="///D:/Programming/pythonGuiProject/cafteria/orders/__init__.py" type="text/plain"><tt>orders</tt></a>
+<span class="moduletype">Package</span>  <div class="import">
+imported by:
+    <a href="#orders.admin">orders.admin</a>
+ &#8226;   <a href="#orders.models">orders.models</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="orders.admin"></a>
+  <a target="code" href="///D:/Programming/pythonGuiProject/cafteria/orders/admin.py" type="text/plain"><tt>orders.admin</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#PyQt6.QtCore">PyQt6.QtCore</a>
+ &#8226;   <a href="#PyQt6.QtWidgets">PyQt6.QtWidgets</a>
+ &#8226;   <a href="#auth.models">auth.models</a>
+ &#8226;   <a href="#food.models">food.models</a>
+ &#8226;   <a href="#orders">orders</a>
+ &#8226;   <a href="#orders.models">orders.models</a>
+ &#8226;   <a href="#staff.states.base">staff.states.base</a>
+ &#8226;   <a href="#typing">typing</a>
+ &#8226;   <a href="#utils.utilities">utils.utilities</a>
+ &#8226;   <a href="#view.generics">view.generics</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#staff.views">staff.views</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="orders.models"></a>
+  <a target="code" href="///D:/Programming/pythonGuiProject/cafteria/orders/models.py" type="text/plain"><tt>orders.models</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#auth.models">auth.models</a>
+ &#8226;   <a href="#db">db</a>
+ &#8226;   <a href="#db.models">db.models</a>
+ &#8226;   <a href="#food.models">food.models</a>
+ &#8226;   <a href="#orders">orders</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#account.admin">account.admin</a>
+ &#8226;   <a href="#account.models">account.models</a>
+ &#8226;   <a href="#main.py">main.py</a>
+ &#8226;   <a href="#orders.admin">orders.admin</a>
+ &#8226;   <a href="#students.view">students.view</a>
+
+  </div>
+
+</div>
+
+<div class="node">
   <a name="org"></a>
   <a target="code" href="" type="text/plain"><tt>org</tt></a>
 <span class="moduletype">MissingModule</span>  <div class="import">
 imported by:
-    <a href="#copy">copy</a>
+    <a href="#pickle">pickle</a>
 
   </div>
 
@@ -7007,14 +7147,14 @@ imported by:
   <a target="code" href="///C:/Users/Omosh/AppData/Local/Programs/Python/Python310/lib/pickle.py" type="text/plain"><tt>pickle</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
-    <a href="#'org.python'">'org.python'</a>
- &#8226;   <a href="#_compat_pickle">_compat_pickle</a>
+    <a href="#_compat_pickle">_compat_pickle</a>
  &#8226;   <a href="#_pickle">_pickle</a>
  &#8226;   <a href="#codecs">codecs</a>
  &#8226;   <a href="#copyreg">copyreg</a>
  &#8226;   <a href="#functools">functools</a>
  &#8226;   <a href="#io">io</a>
  &#8226;   <a href="#itertools">itertools</a>
+ &#8226;   <a href="#org">org</a>
  &#8226;   <a href="#pprint">pprint</a>
  &#8226;   <a href="#re">re</a>
  &#8226;   <a href="#struct">struct</a>
@@ -7733,7 +7873,9 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#staff.states.food">staff.states.food</a>
+    <a href="#account.admin">account.admin</a>
+ &#8226;   <a href="#orders.admin">orders.admin</a>
+ &#8226;   <a href="#staff.states.food">staff.states.food</a>
  &#8226;   <a href="#staff.states.staff">staff.states.staff</a>
  &#8226;   <a href="#staff.states.students">staff.states.students</a>
  &#8226;   <a href="#staff.views">staff.views</a>
@@ -7819,6 +7961,8 @@ imported by:
 imports:
     <a href="#PyQt6.QtGui">PyQt6.QtGui</a>
  &#8226;   <a href="#PyQt6.QtWidgets">PyQt6.QtWidgets</a>
+ &#8226;   <a href="#account.admin">account.admin</a>
+ &#8226;   <a href="#orders.admin">orders.admin</a>
  &#8226;   <a href="#staff">staff</a>
  &#8226;   <a href="#staff.states.base">staff.states.base</a>
  &#8226;   <a href="#staff.states.food">staff.states.food</a>
@@ -7976,6 +8120,7 @@ imports:
   <div class="import">
 imported by:
     <a href="#components.reg_form">components.reg_form</a>
+ &#8226;   <a href="#main.py">main.py</a>
  &#8226;   <a href="#staff.states.students">staff.states.students</a>
  &#8226;   <a href="#students.view">students.view</a>
 
@@ -7992,9 +8137,11 @@ imports:
  &#8226;   <a href="#PyQt6.QtCore">PyQt6.QtCore</a>
  &#8226;   <a href="#PyQt6.QtGui">PyQt6.QtGui</a>
  &#8226;   <a href="#PyQt6.QtWidgets">PyQt6.QtWidgets</a>
+ &#8226;   <a href="#account.models">account.models</a>
  &#8226;   <a href="#components.menu_item">components.menu_item</a>
  &#8226;   <a href="#datetime">datetime</a>
  &#8226;   <a href="#food.models">food.models</a>
+ &#8226;   <a href="#orders.models">orders.models</a>
  &#8226;   <a href="#settings">settings</a>
  &#8226;   <a href="#students">students</a>
  &#8226;   <a href="#students.models">students.models</a>
@@ -8439,7 +8586,8 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#auth.models">auth.models</a>
+    <a href="#account.admin">account.admin</a>
+ &#8226;   <a href="#auth.models">auth.models</a>
  &#8226;   <a href="#auth.view">auth.view</a>
  &#8226;   <a href="#components.creds_form">components.creds_form</a>
  &#8226;   <a href="#components.reg_form">components.reg_form</a>
@@ -8449,6 +8597,7 @@ imported by:
  &#8226;   <a href="#importlib.abc">importlib.abc</a>
  &#8226;   <a href="#importlib.metadata">importlib.metadata</a>
  &#8226;   <a href="#importlib.metadata._meta">importlib.metadata._meta</a>
+ &#8226;   <a href="#orders.admin">orders.admin</a>
  &#8226;   <a href="#staff.states.food">staff.states.food</a>
  &#8226;   <a href="#staff.states.staff">staff.states.staff</a>
  &#8226;   <a href="#staff.states.students">staff.states.students</a>
@@ -8651,9 +8800,11 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#auth.view">auth.view</a>
+    <a href="#account.admin">account.admin</a>
+ &#8226;   <a href="#auth.view">auth.view</a>
  &#8226;   <a href="#components.creds_form">components.creds_form</a>
  &#8226;   <a href="#components.reg_form">components.reg_form</a>
+ &#8226;   <a href="#orders.admin">orders.admin</a>
  &#8226;   <a href="#staff.states.food">staff.states.food</a>
  &#8226;   <a href="#staff.states.staff">staff.states.staff</a>
  &#8226;   <a href="#staff.states.students">staff.states.students</a>
@@ -8716,6 +8867,7 @@ imported by:
     <a href="#auth.view">auth.view</a>
  &#8226;   <a href="#components.creds_form">components.creds_form</a>
  &#8226;   <a href="#components.reg_form">components.reg_form</a>
+ &#8226;   <a href="#orders.admin">orders.admin</a>
  &#8226;   <a href="#staff.states.base">staff.states.base</a>
  &#8226;   <a href="#staff.views">staff.views</a>
  &#8226;   <a href="#students.view">students.view</a>

@@ -128,6 +128,7 @@ class SqliteDb:
                     {self.get_sql_fields(model)}
                 );
         """
+
         # print(sql)
         try:
             c = self._connection.cursor()
@@ -257,6 +258,8 @@ class SqliteDb:
                     return True
         else:
             self.createTable(model)
+            self.createSingleColumnIndex(model)
+            self.createMultiColumnIndex(model)
         return False
 
     def delete(self, model):
@@ -328,31 +331,35 @@ class SqliteDb:
         except Error as e:
             raise e
 
-    def createIndex(self, model):
+    def createSingleColumnIndex(self, model):
         indexed = model.getIndexFields()
-        for i in indexed:
+        if indexed:
+            for i in indexed:
+                sql = f"""
+                CREATE INDEX idx_{i} ON {model._meta.table_name} ({i});
+                """
+                print(sql)
+                try:
+                    c = self._connection.cursor()
+                    c.execute(sql)
+                    c.close()
+                except Error as e:
+                    raise e
+
+    def createMultiColumnIndex(self, model):
+        index = model.validMultiFieldIndex
+        if index:
+            name = "_".join(index)
             sql = f"""
-            CREATE INDEX idx_{i} ON {model._meta.table_name} ({i});
+            CREATE INDEX idx_{name} ON {model._meta.table_name} ({", ".join(index)});
             """
+            print(sql)
             try:
                 c = self._connection.cursor()
-                c.execute(sql)
+                # c.execute(sql)
                 c.close()
             except Error as e:
                 raise e
-
-    def createMultiColumnIndex(self, model):
-        index = model.getValidMultiFieldIndex()
-        name = "_".join(index)
-        sql = f"""
-        CREATE INDEX idx_{name} ON {model._meta.table_name} ({", ".join(index)});
-        """
-        try:
-            c = self._connection.cursor()
-            c.execute(sql)
-            c.close()
-        except Error as e:
-            raise e
 
     def getIndexes(self, model):
         sql = f"""

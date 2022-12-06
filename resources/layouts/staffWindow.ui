@@ -41,6 +41,13 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
+          <widget class="QCommandLinkButton" name="dashBoard">
+           <property name="text">
+            <string>Users</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QCommandLinkButton" name="manageStudents">
            <property name="text">
             <string>Students</string>
@@ -79,13 +86,6 @@
           <widget class="QCommandLinkButton" name="transactions">
            <property name="text">
             <string>Transactions</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCommandLinkButton" name="dashBoard">
-           <property name="text">
-            <string>DashBoard</string>
            </property>
           </widget>
          </item>
