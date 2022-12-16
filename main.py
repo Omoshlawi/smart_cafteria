@@ -1,4 +1,3 @@
-import datetime
 import os
 import sys
 
@@ -6,16 +5,13 @@ from PyQt6.QtWidgets import QApplication
 
 from auth.models import User
 from auth.view import LoginView
-from db.models import DateField, ForeignKeyField, DateTimeField, PositiveIntegerField, BooleanField, OneToOneField, OnRelationShipModified
-from db.sqlite import SqliteDb
-from orders.models import Orders
-from settings import RESOURCES, BASE_DIR
-from students.models import Student
+from settings import RESOURCES
 
 
 def run():
-    db = SqliteDb.getDatabase()
-    # u = User()
+    # db = SqliteDb.getDatabase()
+    u = User.all()
+    print(t:=[user for user in u])
     # db.dropTable(s)
     # db.dropTable(u)
     # db.close()

@@ -34,7 +34,8 @@ class StudentManager(BaseManager):
         curr_item = self.treeView.currentItem()
         if curr_item:
             id_ = int(curr_item.text(0))
-            user = User.get(user_id=id_)
+            stud = Student.get(id=id_)
+            user = User.get(user_id=stud.user.value)
             self.credsDialog = CredentialsForm(user.toJson(), self.window)
             self.credsDialog.exec()
 

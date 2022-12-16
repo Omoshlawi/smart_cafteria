@@ -5,6 +5,7 @@ import re as regex
 import typing
 from datetime import datetime, date
 from decimal import Decimal
+import copy
 
 from core.exceptions import ObjectDoesNotExistError, MultipleObjectsError, InvalidArgumentsError
 from .manager import Manager
@@ -373,19 +374,22 @@ class Model(Manager):
         self._meta = Model.Meta(self)
         # update the class attrs with the provided ones
         for key, state in self.get_class_attrs():
+            value = copy.deepcopy(state)
             try:
-                if isinstance(state, BooleanField):
-                    state.setValue(kwargs[key] == 1)
-                elif isinstance(state, PasswordField):
+                if isinstance(value, BooleanField):
+                    value.setValue(kwargs[key] == 1)
+                elif isinstance(value, PasswordField):
                     if len(str(kwargs[key])) == 64:
-                        state.setHash(kwargs[key])
+                        value.setHash(kwargs[key])
                     else:
-                        state.setValue(kwargs[key])
+                        value.setValue(kwargs[key])
                 else:
-                    state.setValue(kwargs[key])
+                    value.setValue(kwargs[key])
+                setattr(self, key, value)
             except KeyError:
                 # set the unprovided to default
-                state.setValue(getattr(state, "_default"))
+                value.setValue(getattr(value, "_default"))
+                setattr(self, key, value)
             except AttributeError as e:
                 raise e
         # TODO CHECK SCHEMA
