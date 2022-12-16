@@ -1,3 +1,4 @@
+import copy
 import enum
 import hashlib
 import inspect
@@ -5,7 +6,6 @@ import re as regex
 import typing
 from datetime import datetime, date
 from decimal import Decimal
-import copy
 
 from core.exceptions import ObjectDoesNotExistError, MultipleObjectsError, InvalidArgumentsError
 from .manager import Manager
@@ -494,7 +494,6 @@ class Model(Manager):
             raise ObjectDoesNotExistError()
         else:
             return data[0]
-
 
     def delete(self):
         db = SqliteDb.getDatabase()

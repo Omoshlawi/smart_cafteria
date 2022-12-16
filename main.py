@@ -3,16 +3,12 @@ import sys
 
 from PyQt6.QtWidgets import QApplication
 
-from auth.models import User
 from auth.view import LoginView
 from settings import RESOURCES
-from students.models import Student
 
 
 def run():
     # db = SqliteDb.getDatabase()
-    print([us for us in User.all()])
-
     # db.dropTable(s)
     # db.dropTable(u)
     # db.close()
@@ -31,8 +27,6 @@ def run():
         app.setStyleSheet(f.read())
     ui = LoginView()
     ui.window.show()
-    # student = Student.get(user=1)
-    # print(student.registration_number)
     sys.exit(app.exec())
 
 
