@@ -486,18 +486,15 @@ class Model(Manager):
         :raises : MultipleObjectsError if there are multiple objects matching query
         :raises: InvalidArgumentsError when given wrong arguments
         """
-        # TODO USE FILTER HERE AND CHECK LENGTH TO DECIDE ERROR TO THROW FOR CODE RE USABILITY
-        if not kwargs:
-            raise InvalidArgumentsError("Yo must provide at least one keyword argument, none was provided")
-        db = SqliteDb.getDatabase()
-        try:
-            data = db.getRecord(cls(**kwargs), kwargs)
-            db.close()
-            return cls(**data)
-        except ObjectDoesNotExistError as e:
-            raise e
-        except MultipleObjectsError as e:
-            raise e
+        data = tuple(cls.filter(**kwargs))
+        l = len(data)
+        if l > 1:
+            raise MultipleObjectsError()
+        elif l < 1:
+            raise ObjectDoesNotExistError()
+        else:
+            return data[0]
+
 
     def delete(self):
         db = SqliteDb.getDatabase()
@@ -513,6 +510,8 @@ class Model(Manager):
 
     @classmethod
     def filter(cls, **kwargs):
+        if not kwargs:
+            raise InvalidArgumentsError()
         db = SqliteDb.getDatabase()
         records = db.filterRecord(cls(**kwargs), kwargs)
         db.close()

@@ -6,12 +6,13 @@ from PyQt6.QtWidgets import QApplication
 from auth.models import User
 from auth.view import LoginView
 from settings import RESOURCES
+from students.models import Student
 
 
 def run():
     # db = SqliteDb.getDatabase()
-    u = User.all()
-    print(t:=[user for user in u])
+    print([us for us in User.all()])
+
     # db.dropTable(s)
     # db.dropTable(u)
     # db.close()
